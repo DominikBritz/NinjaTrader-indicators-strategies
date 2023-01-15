@@ -23,7 +23,7 @@ jobs:
           path: ProperSignalBar.zip
       - uses: montudor/action-zip@v1
         with:
-          args: zip -qq -r "Indicators/ProperSignalBar/Indicators/ProperSignalBar.zip" "Indicators/ProperSignalBar/Indicators" "Indicators/ProperSignalBar/Info.xml"
+          args: zip -qq -r "Indicators/ProperSignalBar/ProperSignalBar.zip" "Indicators/ProperSignalBar/Indicators" "Indicators/ProperSignalBar/Info.xml"
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Update zip file
