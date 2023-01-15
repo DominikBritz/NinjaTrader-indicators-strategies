@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          token: ${{ secrets."github-actions[bot]" }}
+          token: ${{ secrets.PAT }}
       - uses: JesseTG/rm@v1.0.3
         with:
           path: ProperSignalBar.zip
