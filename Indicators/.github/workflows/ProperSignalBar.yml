@@ -1,0 +1,27 @@
+# ZIPs all indicator files
+
+name: ZIP ProperSignalBar
+
+on:
+  push:
+    paths:
+      - 'Indicators/ProperSignalBar/Indicators/**'
+      - 'Indicators/ProperSignalBar/Info.xml'
+
+  # Allow running this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  zip-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: JesseTG/rm@v1.0.3
+        with:
+          path: ProperSignalBar.zip
+      - uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r ProperSignalBar.zip "Indicators/ProperSignalBar/Indicators" "Indicators/ProperSignalBar/Info.xml"
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update zip file
