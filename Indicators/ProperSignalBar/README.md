@@ -14,6 +14,9 @@ A proper signal shows momentum and meets the following criteria:
 - The candle body is minimum 4 ticks in size.
 - A bullish signal bar must close above the 21 period EMA. A bearish one below.
 
+## Installation
+Download the `ProperSignalBar.zip` file and import it in NinjaTrader: `Tools -> Import -> NinjaScript Add-On...`
+
 ## Important to understand
 As per **Financially Free Trading**, the two most important things for a good trade are the market context and a proper signal bar. The latter shows momentum in the market. The indicator can help you with  identifiying a good signal bar, but it **cannot** help you to analyze to correct market context. It also does **not** count if the signal bar is a first or second entry. 
 
