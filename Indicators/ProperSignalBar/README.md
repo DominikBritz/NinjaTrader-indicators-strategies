@@ -2,15 +2,18 @@
 
 Highlights a "proper signal bar" as taught by price action trader **Financially Free Trading** on [YouTube](https://www.youtube.com/watch?v=_U493Pl-dGg). Shows the SL, scalp, and runner targets on the chart, too.
 
+The indicator is intended to be used on a 2000 tick chart for the ES futures market.
+
 ## Signal bar definition
 A proper signal shows momentum and meets the following criteria:
 
 - A bullish signal bar has to go at least 1 tick *below* the low of the previous bar. A bearish one has to go at least 1 tick *above* the previous bar.
 - A bullish signal bar must finish within 2 ticks of its high. A bearish one within 2 ticks of its low.
-- The candle body is minimum 4 ticks in size
+- The candle body is minimum 4 ticks in size.
+- A bullish signal bar must close above the 21 period EMA. A bearish one below.
 
-## Indicator purpose
-As per **Financially Free Trading**, the two most important things for a good trade are the market context and a proper signal bar, that indicates momentum in the market. The indicator can help you with  identifiying a good signal bar, but it **cannot** help you to analyze to correct market context.
+## Important to understand
+As per **Financially Free Trading**, the two most important things for a good trade are the market context and a proper signal bar. The latter shows momentum in the market. The indicator can help you with  identifiying a good signal bar, but it **cannot** help you to analyze to correct market context. It also does **not** count if the signal bar is a first or second entry. 
 
 ## Indicator settings
 The indicator comes with a lot of options to identify a good signal bar.
