@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.github-actions[bot] }}
       - uses: JesseTG/rm@v1.0.3
         with:
           path: ProperSignalBar.zip
