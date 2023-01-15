@@ -2,6 +2,8 @@
 
 Highlights a "proper signal bar" as taught by price action trader **Financially Free Trading** on [YouTube](https://www.youtube.com/watch?v=_U493Pl-dGg). Shows the SL, scalp, and runner targets on the chart, too.
 
+![screenshot](https://raw.githubusercontent.com/DominikBritz/NinjaTrader-indicators-strategies/main/Indicators/ProperSignalBar/screenshot.png)
+
 The indicator is intended to be used on a 2000 tick chart for the ES futures market.
 
 ## Signal bar definition
