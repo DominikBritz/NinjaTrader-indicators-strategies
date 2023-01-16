@@ -26,6 +26,7 @@ As per **Financially Free Trading**, the two most important things for a good tr
 The indicator comes with a lot of options to identify a good signal bar.
 
 `BarMaxSizeInTicks`
+
 Max. size of the bar in ticks. The settings allows filtering out to large signal bars, as the stop loss may be too big.
 
 Default: 25
@@ -37,30 +38,36 @@ Min. size of the bar in ticks. One wants to avoid small bars as they don't show 
 Default: 4
 
 `BarMinBodyInTicks`
+
 The minimum size of the candle's body in ticks. One want to avoid to small candle bodies as they don't show enough momentum. See also `BarMinBodyInTicks`.
 
 `BarCloseToHighLowInTicks`
+
 Max. number of ticks the close can be away from the high or low.
 
 Default: 2
 
 `BarMinTickHigherLower`
+
 Min. number of ticks the current bar must go below or above the previous one, depending on a bullish or bearish bar.
 
 Default: 1
 
 `BarAwayFromEMAInTicks`
+
 Max. number of ticks the low of a bar can be away from the EMA if we are bullish.
 Max. number of ticks the high of a bar can be away from the EMA if we are bearish.
 
 Default: 6
 
 `EMALength`
-Period of the EMA. 
+
+Period of the EMA. EMA is not plotted by the indicator. Must be added to the chart seperately.
 
 Default: 21
 
 `TargetScalpLessTicksThanSL`
+
 The indicator plots the scalp target on the chart with a small green (long) or red (short) line. SL in ticks minus `TargetScalpLessTicksThanSL` = scalp target.
 
 SL calculation: Bar size + 2 ticks. 2 ticks because the SL goes one tick below the bar and you enter one tick above the bar.
@@ -68,6 +75,7 @@ SL calculation: Bar size + 2 ticks. 2 ticks because the SL goes one tick below t
 Default: 4
 
 `TargetRunnerTicks`
+
 The indicator plots the runner target on the chart with a big green (long) or red (short) line. 
 
 Default: 24
