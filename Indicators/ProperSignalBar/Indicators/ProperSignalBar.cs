@@ -197,7 +197,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				double SL = SignalBarSize + 2;
 				Draw.Text(this, "SignalBarSize"+CurrentBar, "SL: "+Convert.ToString(SL), 0, Low[0] - 6 * TickSize, Brushes.Yellow);
 				Draw.Line(this, "Scalp"+CurrentBar, false, 0, High[0] + ((SL-TargetScalpLessTicksThanSL) * TickSize), -1, High[0] + ((SL-TargetScalpLessTicksThanSL) * TickSize), Brushes.LimeGreen, DashStyleHelper.Solid, 2);
-				Draw.Line(this, "Runner"+CurrentBar, false, 0, High[0] + (TargetRunnerTicks * TickSize), -1, High[0] + (TargetRunnerTicks * TickSize), Brushes.LimeGreen, DashStyleHelper.Solid, 5);
+				Draw.Line(this, "Runner"+CurrentBar, false, 0, High[0] + 1 * TickSize + (TargetRunnerTicks * TickSize), -1, High[0] + 1 * TickSize + (TargetRunnerTicks * TickSize), Brushes.LimeGreen, DashStyleHelper.Solid, 5);
 			}
 							
 	
@@ -266,7 +266,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				double SL = SignalBarSize + 2;
 				Draw.Text(this, "SignalBarSize"+CurrentBar, "SL: "+Convert.ToString(SL), 0, High[0] + 6 * TickSize, Brushes.Yellow);
 				Draw.Line(this, "Scalp"+CurrentBar, false, 0, Low[0] - ((SL-TargetScalpLessTicksThanSL) * TickSize), -1, Low[0] - ((SL-TargetScalpLessTicksThanSL) * TickSize), Brushes.Red, DashStyleHelper.Solid, 2);
-				Draw.Line(this, "Runner"+CurrentBar, false, 0, Low[0] - (TargetRunnerTicks * TickSize), -1, Low[0] - (TargetRunnerTicks * TickSize), Brushes.Red, DashStyleHelper.Solid, 5);
+				Draw.Line(this, "Runner"+CurrentBar, false, 0, Low[0] - 1 * TickSize - (TargetRunnerTicks * TickSize), -1, Low[0] - 1 * TickSize - (TargetRunnerTicks * TickSize), Brushes.Red, DashStyleHelper.Solid, 5);
 			}
 			
 
