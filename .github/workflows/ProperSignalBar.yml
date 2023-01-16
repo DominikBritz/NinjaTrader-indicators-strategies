@@ -24,7 +24,7 @@ jobs:
       - name: install zip
         uses: montudor/action-zip@v1
       - name: zip output
-        run: zip -qq -r ProperSignalBar.zip Indicators Info.xml
+        run: zip -q -r -l ProperSignalBar.zip Indicators Info.xml
         working-directory: Indicators/ProperSignalBar
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:

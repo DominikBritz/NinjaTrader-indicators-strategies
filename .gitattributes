@@ -1,8 +1,0 @@
-# Set the default behavior
-* text=auto
-
-
-# Force NinjaTrader files to leave CRLF line endings as is
-*.cs text eol=crlf
-*.xml text eol=crlf
-*.zip text eol=crlf
