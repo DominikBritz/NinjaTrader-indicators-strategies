@@ -31,6 +31,7 @@ Max. size of the bar in ticks. The settings allows filtering out to large signal
 Default: 25
 
 `BarMinSizeInTicks`
+
 Min. size of the bar in ticks. One wants to avoid small bars as they don't show enough momentum. See also `BarMinBodyInTicks`.
 
 Default: 4
