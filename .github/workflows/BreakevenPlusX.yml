@@ -1,0 +1,31 @@
+# ZIPs all indicator files
+
+name: ZIP BreakevenPlusX
+
+on:
+  push:
+    paths:
+      - 'Indicators/BreakevenPlusX/Indicators/**'
+      - 'Indicators/BreakevenPlusX/Info.xml'
+
+  # Allow running this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  zip-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+      - uses: JesseTG/rm@v1.0.3
+        with:
+          path: "Indicators/BreakevenPlusX/BreakevenPlusX.zip"
+      - name: install zip
+        uses: montudor/action-zip@v1
+      - name: zip output
+        run: zip -q -r -l BreakevenPlusX.zip Indicators Info.xml
+        working-directory: Indicators/BreakevenPlusX
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update zip file
