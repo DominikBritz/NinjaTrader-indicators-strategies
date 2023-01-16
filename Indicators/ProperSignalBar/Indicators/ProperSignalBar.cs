@@ -32,7 +32,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		{
 			if (State == State.SetDefaults)
 			{
-				Description									= @"";
+				Description									= @"https://github.com/DominikBritz/NinjaTrader-indicators-strategies/tree/main/Indicators/ProperSignalBar";
 				Name										= "Proper Signal Bar";
 				Calculate									= Calculate.OnEachTick;
 				IsOverlay									= true;
