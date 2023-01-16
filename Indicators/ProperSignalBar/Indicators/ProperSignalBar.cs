@@ -42,6 +42,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				DrawVerticalGridLines						= true;
 				PaintPriceMarkers							= false;
 				ScaleJustification							= NinjaTrader.Gui.Chart.ScaleJustification.Right;
+				BarsRequiredToPlot							= 60;
 
 
 				// Inputs misc
@@ -100,6 +101,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 		protected override void OnBarUpdate()
 		{
 			
+			if (CurrentBars[0] < BarsRequiredToPlot)
+			return;
+
 			int IsBullishBar = 0;
 			int IsBearishBar = 0;
 			
