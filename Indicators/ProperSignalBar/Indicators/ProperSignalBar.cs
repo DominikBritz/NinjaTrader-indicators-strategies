@@ -43,6 +43,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				PaintPriceMarkers							= false;
 				ScaleJustification							= NinjaTrader.Gui.Chart.ScaleJustification.Right;
 
+
 				// Inputs misc
 				BarMaxSizeInTicks						= 25;
 				BarMinSizeInTicks						= 4;
