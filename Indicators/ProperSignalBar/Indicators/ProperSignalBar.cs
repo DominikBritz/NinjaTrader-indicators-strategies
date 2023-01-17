@@ -34,7 +34,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			{
 				Description									= @"https://github.com/DominikBritz/NinjaTrader-indicators-strategies/tree/main/Indicators/ProperSignalBar";
 				Name										= "Proper Signal Bar";
-				Calculate									= Calculate.OnEachTick;
+				Calculate									= Calculate.OnBarClose;
 				IsOverlay									= true;
 				DisplayInDataBox							= true;
 				DrawOnPricePanel							= true;
