@@ -299,14 +299,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 			Values[15][0] = IsNotBearishDojiBar;
 			
 			Values[16][0] = IsProperSignalBar; 
-			
-			
-			
-			
-			
-			
-			
-			//Draw.Text(this, "test", TicksAway.ToString("n0"), 0, High[0] + 12 * TickSize);
 		}
 
 		#region Properties
@@ -365,6 +357,94 @@ namespace NinjaTrader.NinjaScript.Indicators
 		{ get; set; }
 		#endregion
 
+		
+		#region Plots
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsBullishBar
+		{ get { return Values[0]; } }
+
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsBearishBar
+		{ get { return Values[1]; } }
+		
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsCloseAboveEMA
+		{ get { return Values[2]; } }
+		
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsCloseBelowEMA
+		{ get { return Values[3]; } }
+		
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsBarLowerThanPrevious
+		{ get { return Values[4]; } }
+		
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsBarHigherThanPrevious
+		{ get { return Values[5]; } }
+		
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsLowNearEMA
+		{ get { return Values[6]; } }
+		
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsHighNearEMA
+		{ get { return Values[7]; } }
+		
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsCloseNearHigh
+		{ get { return Values[8]; } }
+		
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsCloseNearLow
+		{ get { return Values[9]; } }
+		
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsBullishBarNotTooLarge
+		{ get { return Values[10]; } }
+		
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsBearishBarNotTooLarge
+		{ get { return Values[11]; } }
+		
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsBullishBarNotTooSmall
+		{ get { return Values[12]; } }
+		
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsBearishBarNotTooSmall
+		{ get { return Values[13]; } }
+		
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsNotBullishDojiBar
+		{ get { return Values[14]; } }
+		
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsNotBearishDojiBar
+		{ get { return Values[15]; } }
+		
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> IsProperSignalBar
+		{ get { return Values[16]; } }
+		
+		#endregion
 	}
 }
 
