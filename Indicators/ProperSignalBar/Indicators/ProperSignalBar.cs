@@ -53,6 +53,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				BarMinTickHigherLower					= 1;
 				BarAwayFromEMAInTicks					= 6;
 				EMALength								= 21;
+				AlertFile								= @"Alert1.wav";
 				
 				// Inputs target
 				TargetScalpLessTicksThanSL				= 4;
@@ -191,6 +192,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 			{
 				IsProperSignalBar = 1;
 				
+				Alert("Proper signal bar"+CurrentBar, Priority.High, "Proper signal bar long", NinjaTrader.Core.Globals.InstallDir+@"\sounds\"+AlertFile, 0, Brushes.Green, Brushes.White);  
+
 				Draw.TriangleUp(this, "BullishSignalBar"+CurrentBar, true, 0, Low[0] - 2 * TickSize, Brushes.Green);
 						
 				
@@ -259,6 +262,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 			if (IsBearishBar == 1 && IsCloseBelowEMA == 1 && IsBarHigherThanPrevious == 1 && IsHighNearEMA == 1 && IsCloseNearLow == 1 && IsBearishBarNotTooLarge == 1 && IsBearishBarNotTooSmall == 1 && IsNotBearishDojiBar == 1)
 			{
 				IsProperSignalBar = -1;
+
+				Alert("Proper signal bar"+CurrentBar, Priority.High, "Proper signal bar short", NinjaTrader.Core.Globals.InstallDir+@"\sounds\"+AlertFile, 0, Brushes.Red, Brushes.White);  
 				
 				Draw.TriangleDown(this, "BullishSignalBar"+CurrentBar, true, 0, High[0] + 2 * TickSize, Brushes.Red);
 						
@@ -342,6 +347,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Range(1, int.MaxValue)]
 		[Display(Name="EMALength", Order=7, GroupName="Parameters")]
 		public int EMALength
+		{ get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name="AlertFile", Order=8, GroupName="Parameters")]
+		public string AlertFile
 		{ get; set; }
 		
 		[NinjaScriptProperty]
