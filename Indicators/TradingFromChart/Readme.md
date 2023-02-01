@@ -7,7 +7,7 @@ Allows placing orders with a keyboard + mouse combination on a NinjaTrader chart
 
 ## Buy
 ```
-Left ctrl + left mouse
+Left shift + left mouse
 ```
 - Creates a buy limit order when below price
 - Create a stop buy limit order when above price

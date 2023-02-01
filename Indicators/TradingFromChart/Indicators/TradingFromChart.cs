@@ -38,7 +38,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			#region variables and State Changes
 			if (State == State.SetDefaults)
 			{
-				Description									= @"Allows buying from chart with Ctrl + left mouse click and selling from chart with Alt + left mouse click.";
+				Description									= @"Allows buying from chart with Shift + left mouse click and selling from chart with Alt + left mouse click.";
 				Name										= "TradingFromChart";
 				Calculate									= Calculate.OnPriceChange;
 				IsOverlay									= true;
@@ -94,7 +94,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		
 		private void ChartPanel_PreviewKeyDown(object sender, KeyEventArgs e)
 		{
-			if ( Keyboard.IsKeyDown(Key.LeftCtrl))
+			if ( Keyboard.IsKeyDown(Key.LeftShift))
 			{
 				buyButton = true;
 			}
@@ -107,7 +107,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		
 		private void ChartPanel_PreviewKeyUp(object sender, KeyEventArgs e)
 		{
-			if (Keyboard.IsKeyUp(Key.LeftCtrl))
+			if (Keyboard.IsKeyUp(Key.LeftShift))
 			{
 				buyButton = false;
 			}
