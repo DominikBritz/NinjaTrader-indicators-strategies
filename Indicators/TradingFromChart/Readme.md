@@ -1,6 +1,8 @@
 # TradingFromChart indicator
 Allows placing orders with a keyboard + mouse combination on a NinjaTrader chart, without having to use NinjaTrader's fiddly right click menu.
 
+![example_gif](TradingFromChartExample.gif)
+
 # Requirements
 - NinjaTrader 8
 
