@@ -33,7 +33,7 @@ The hotkey is configurable in the indicator settings.
 The indicator automatically uses the account and ATM strategy you have set in chart trader.
 
 # Indicator settings
-
+![indicator_settings](indicator_settings.png)
 ## Button layout
 ### `Top spacing`
 
