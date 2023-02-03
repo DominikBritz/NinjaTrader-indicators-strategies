@@ -27,18 +27,35 @@ namespace NinjaTrader.NinjaScript.Indicators
 	{
 		private Account myAccount;
 		private ChartScale MyChartScale;
-		private bool buyButton = false;
-		private bool sellButton = false;
-		private Order limitOrder;
+		private Order myOrder;
 		private int myQuantity; 
 		private string myATM;
+		
+		private bool buyButton = false;
+		private bool sellButton = false;
+		
+		private DesiredKey buyKey = DesiredKey.LeftShift;
+		private DesiredKey sellKey = DesiredKey.LeftAlt;
+		
+		private Key kbuyKey;
+		private Key ksellKey;
+		
+		private StopOrderTypes stopOrderType = StopOrderTypes.StopLimit;
+		private OrderType orderType;
+		
+		private bool myButtonClicked = false;
+		private System.Windows.Controls.Button myButton;
+		private System.Windows.Controls.Grid myGrid;
+		private bool tradingFromChart = false;
+		
+
 
 		protected override void OnStateChange()
 		{
-			#region variables and State Changes
+
 			if (State == State.SetDefaults)
 			{
-				Description									= @"Allows buying from chart with Shift + left mouse click and selling from chart with Alt + left mouse click.";
+				Description									= @"";
 				Name										= "TradingFromChart";
 				Calculate									= Calculate.OnPriceChange;
 				IsOverlay									= true;
@@ -50,6 +67,10 @@ namespace NinjaTrader.NinjaScript.Indicators
 				ScaleJustification							= NinjaTrader.Gui.Chart.ScaleJustification.Right;
 				IsSuspendedWhileInactive					= true;
 				
+				
+				myButtonRightSpacing = 10;
+				myButtonTopSpacing = 10;
+
 			}
 		 	else if (State == State.DataLoaded)
   			{
@@ -64,6 +85,82 @@ namespace NinjaTrader.NinjaScript.Indicators
 				{
 					ChartPanel.PreviewKeyDown += ChartPanel_PreviewKeyDown;
 					ChartPanel.PreviewKeyUp += ChartPanel_PreviewKeyUp;
+				}));
+				
+				switch (buyKey)
+				{
+					case DesiredKey.LeftShift:
+						kbuyKey = Key.LeftShift;
+						break;
+					
+					case DesiredKey.LeftAlt:
+						kbuyKey = Key.LeftAlt;
+						break;
+						
+					case DesiredKey.RightAlt:
+						kbuyKey = Key.RightAlt;
+						break;
+						
+					case DesiredKey.RightShift:
+						kbuyKey = Key.RightShift;
+						break;
+				}
+				
+				switch (sellKey)
+				{
+					case DesiredKey.LeftShift:
+						ksellKey = Key.LeftShift;
+						break;
+					
+					case DesiredKey.LeftAlt:
+						ksellKey = Key.LeftAlt;
+						break;
+						
+					case DesiredKey.RightAlt:
+						ksellKey = Key.RightAlt;
+						break;
+						
+					case DesiredKey.RightShift:
+						ksellKey = Key.RightShift;
+						break;
+				}
+				
+				if (stopOrderType == StopOrderTypes.StopLimit)
+				{
+					orderType = OrderType.StopLimit;
+				}
+				else
+				{
+					orderType = OrderType.StopMarket;
+				}
+				
+				if (UserControlCollection.Contains(myGrid))
+					return;
+				
+				Dispatcher.InvokeAsync((() =>
+				{
+					myGrid = new System.Windows.Controls.Grid
+					{
+						Name = "MyCustomGrid", HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Top
+					};
+					
+					System.Windows.Controls.ColumnDefinition column1 = new System.Windows.Controls.ColumnDefinition();
+					
+					myGrid.ColumnDefinitions.Add(column1);
+					
+					myButton = new System.Windows.Controls.Button
+					{
+						Name = "myButton", Content = "Trading from chart off", Foreground = Brushes.White, Background = Brushes.Red, Margin = new Thickness(0, myButtonTopSpacing, myButtonRightSpacing, 0)
+					};
+					
+					myButton.Click += OnButtonClick;
+
+					System.Windows.Controls.Grid.SetColumn(myButton, 0);
+
+					
+					myGrid.Children.Add(myButton);
+					
+					UserControlCollection.Add(myGrid);
 				}));
 
    			}
@@ -80,11 +177,42 @@ namespace NinjaTrader.NinjaScript.Indicators
 					ChartPanel.PreviewKeyDown -= ChartPanel_PreviewKeyDown;
 					ChartPanel.PreviewKeyUp -= ChartPanel_PreviewKeyUp;
 				}
+				
+				Dispatcher.InvokeAsync((() =>
+				{
+					if (myGrid != null)
+					{
+						if (myButton != null)
+						{
+							myGrid.Children.Remove(myButton);
+							myButton.Click -= OnButtonClick;
+							myButton = null;
+						}
+					}
+				}));
    			}
 		}
-		#endregion
+
 		
-	
+		private void OnButtonClick(object sender, RoutedEventArgs rea)
+		{
+			//System.Windows.Controls.Button button = sender as System.Windows.Controls.Button;
+			
+			if (myButtonClicked == false)
+			{
+				myButton.Content = "Trading from chart on";
+				myButton.Background = Brushes.Green;
+				tradingFromChart = true;
+				myButtonClicked = true;
+			}
+			else
+			{
+				myButton.Content = "Trading from chart off";
+				myButton.Background = Brushes.Red;
+				tradingFromChart = false;
+				myButtonClicked = false;
+			}
+		}
 		
 
 		protected override void OnBarUpdate()
@@ -94,12 +222,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 		
 		private void ChartPanel_PreviewKeyDown(object sender, KeyEventArgs e)
 		{
-			if ( Keyboard.IsKeyDown(Key.LeftShift))
+			if ( Keyboard.IsKeyDown(kbuyKey))
 			{
 				buyButton = true;
 			}
 			
-			if ( Keyboard.IsKeyDown(Key.LeftAlt))
+			if ( Keyboard.IsKeyDown(ksellKey))
 			{
 				sellButton = true;
 			}
@@ -107,12 +235,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 		
 		private void ChartPanel_PreviewKeyUp(object sender, KeyEventArgs e)
 		{
-			if (Keyboard.IsKeyUp(Key.LeftShift))
+			if (Keyboard.IsKeyUp(kbuyKey))
 			{
 				buyButton = false;
 			}
 			
-			if (Keyboard.IsKeyUp(Key.LeftAlt))
+			if (Keyboard.IsKeyUp(ksellKey))
 			{
 				sellButton = false;
 			}
@@ -121,7 +249,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		
 		protected void LeftMouseDown(object sender, MouseButtonEventArgs e)
 		{
-			if(buyButton == true || sellButton == true)
+			if((buyButton == true || sellButton == true) && tradingFromChart == true)
 			{
 				TriggerCustomEvent(o =>
 				{
@@ -142,12 +270,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 					if (buyButton == true)
 					{
 						if (priceClicked > Close[0])
-						{
-							limitOrder = myAccount.CreateOrder(Instrument, OrderAction.Buy, OrderType.StopLimit, OrderEntry.Manual, TimeInForce.Day, myQuantity, priceClicked, priceClicked, "", "Entry", DateTime.MaxValue, null);
+						{	
+							myOrder = myAccount.CreateOrder(Instrument, OrderAction.Buy, orderType, OrderEntry.Manual, TimeInForce.Day, myQuantity, priceClicked, priceClicked, "", "Entry", DateTime.MaxValue, null);
 						}
 						else if (priceClicked < Close[0])
 						{
-							limitOrder = myAccount.CreateOrder(Instrument, OrderAction.Buy, OrderType.Limit, OrderEntry.Manual, TimeInForce.Day, myQuantity, priceClicked, 0, "", "Entry", DateTime.MaxValue, null);
+							myOrder = myAccount.CreateOrder(Instrument, OrderAction.Buy, OrderType.Limit, OrderEntry.Manual, TimeInForce.Day, myQuantity, priceClicked, 0, "", "Entry", DateTime.MaxValue, null);
 						}
 					}
 					
@@ -155,16 +283,16 @@ namespace NinjaTrader.NinjaScript.Indicators
 					{
 						if (priceClicked < Close[0])
 						{
-							limitOrder = myAccount.CreateOrder(Instrument, OrderAction.Sell, OrderType.StopLimit, OrderEntry.Manual, TimeInForce.Day, myQuantity, priceClicked, priceClicked, "", "Entry", DateTime.MaxValue, null);
+							myOrder = myAccount.CreateOrder(Instrument, OrderAction.Sell, orderType, OrderEntry.Manual, TimeInForce.Day, myQuantity, priceClicked, priceClicked, "", "Entry", DateTime.MaxValue, null);
 						}
 						else if (priceClicked > Close[0])
 						{
-							limitOrder = myAccount.CreateOrder(Instrument, OrderAction.Sell, OrderType.Limit, OrderEntry.Manual, TimeInForce.Day, myQuantity, priceClicked, 0, "", "Entry", DateTime.MaxValue, null);
+							myOrder = myAccount.CreateOrder(Instrument, OrderAction.Sell, OrderType.Limit, OrderEntry.Manual, TimeInForce.Day, myQuantity, priceClicked, 0, "", "Entry", DateTime.MaxValue, null);
 						}
 					}
 					
-					NinjaTrader.NinjaScript.AtmStrategy.StartAtmStrategy(myATM, limitOrder);
-					myAccount.Submit(new[] { limitOrder});
+					NinjaTrader.NinjaScript.AtmStrategy.StartAtmStrategy(myATM, myOrder);
+					myAccount.Submit(new[] { myOrder});
 					
 				}, null);
 				
@@ -187,7 +315,56 @@ namespace NinjaTrader.NinjaScript.Indicators
 		}
 		
 		#endregion
+		
+		#region Properties
+		[Display(Name="Buy hotkey", Order=1,GroupName = "Hotkeys", Description="Choose a key binding for buys")]
+		public DesiredKey BuyKey
+		{
+			get { return buyKey; }
+			set { buyKey = value; }
+		}
+		
+		[Display(Name="Sell hotkey", Order=2,GroupName = "Hotkeys", Description="Choose a key binding for sells")]
+		public DesiredKey SellKey
+		{
+			get { return sellKey; }
+			set { sellKey = value; }
+		}
+		
+		[Display(Name="Stop order type", Order=1,GroupName = "Order management", Description="Choose the type of stop order")]
+		public StopOrderTypes StopOrderType
+		{
+			get { return stopOrderType; }
+			set { stopOrderType = value; }
+		}
+		
+		[NinjaScriptProperty]
+		[Range(0, int.MaxValue)]
+		[Display(Name="Top spacing", Order=1, GroupName="Button layout")]
+		public int myButtonTopSpacing
+		{ get; set; }
+		
+		[NinjaScriptProperty]
+		[Range(0, int.MaxValue)]
+		[Display(Name="Right spacing", Order=2, GroupName="Button layout")]
+		public int myButtonRightSpacing
+		{ get; set; }
+		#endregion
 	}
+}
+
+public enum DesiredKey
+{
+	LeftAlt,
+	LeftShift,
+	RightAlt,
+	RightShift
+}
+
+public enum StopOrderTypes
+{
+	StopLimit,
+	StopMarket
 }
 
 #region NinjaScript generated code. Neither change nor remove.
@@ -197,18 +374,18 @@ namespace NinjaTrader.NinjaScript.Indicators
 	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
 	{
 		private TradingFromChart[] cacheTradingFromChart;
-		public TradingFromChart TradingFromChart()
+		public TradingFromChart TradingFromChart(int myButtonTopSpacing, int myButtonRightSpacing)
 		{
-			return TradingFromChart(Input);
+			return TradingFromChart(Input, myButtonTopSpacing, myButtonRightSpacing);
 		}
 
-		public TradingFromChart TradingFromChart(ISeries<double> input)
+		public TradingFromChart TradingFromChart(ISeries<double> input, int myButtonTopSpacing, int myButtonRightSpacing)
 		{
 			if (cacheTradingFromChart != null)
 				for (int idx = 0; idx < cacheTradingFromChart.Length; idx++)
-					if (cacheTradingFromChart[idx] != null &&  cacheTradingFromChart[idx].EqualsInput(input))
+					if (cacheTradingFromChart[idx] != null && cacheTradingFromChart[idx].myButtonTopSpacing == myButtonTopSpacing && cacheTradingFromChart[idx].myButtonRightSpacing == myButtonRightSpacing && cacheTradingFromChart[idx].EqualsInput(input))
 						return cacheTradingFromChart[idx];
-			return CacheIndicator<TradingFromChart>(new TradingFromChart(), input, ref cacheTradingFromChart);
+			return CacheIndicator<TradingFromChart>(new TradingFromChart(){ myButtonTopSpacing = myButtonTopSpacing, myButtonRightSpacing = myButtonRightSpacing }, input, ref cacheTradingFromChart);
 		}
 	}
 }
@@ -217,14 +394,14 @@ namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
 {
 	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
 	{
-		public Indicators.TradingFromChart TradingFromChart()
+		public Indicators.TradingFromChart TradingFromChart(int myButtonTopSpacing, int myButtonRightSpacing)
 		{
-			return indicator.TradingFromChart(Input);
+			return indicator.TradingFromChart(Input, myButtonTopSpacing, myButtonRightSpacing);
 		}
 
-		public Indicators.TradingFromChart TradingFromChart(ISeries<double> input )
+		public Indicators.TradingFromChart TradingFromChart(ISeries<double> input , int myButtonTopSpacing, int myButtonRightSpacing)
 		{
-			return indicator.TradingFromChart(input);
+			return indicator.TradingFromChart(input, myButtonTopSpacing, myButtonRightSpacing);
 		}
 	}
 }
@@ -233,14 +410,14 @@ namespace NinjaTrader.NinjaScript.Strategies
 {
 	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
 	{
-		public Indicators.TradingFromChart TradingFromChart()
+		public Indicators.TradingFromChart TradingFromChart(int myButtonTopSpacing, int myButtonRightSpacing)
 		{
-			return indicator.TradingFromChart(Input);
+			return indicator.TradingFromChart(Input, myButtonTopSpacing, myButtonRightSpacing);
 		}
 
-		public Indicators.TradingFromChart TradingFromChart(ISeries<double> input )
+		public Indicators.TradingFromChart TradingFromChart(ISeries<double> input , int myButtonTopSpacing, int myButtonRightSpacing)
 		{
-			return indicator.TradingFromChart(input);
+			return indicator.TradingFromChart(input, myButtonTopSpacing, myButtonRightSpacing);
 		}
 	}
 }
