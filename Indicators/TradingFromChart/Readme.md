@@ -11,6 +11,12 @@ Allows placing orders with a keyboard + mouse combination on a NinjaTrader chart
 2. Import it in NinjaTrader: `Tools -> Import -> NinjaScript Add-On...`
 3. Add the indicator *TradingFromChart* to the chart
 
+# Known issues
+1. ATM can't be *Custom*
+2. After an initial order is placed, no further orders can be placed. 
+
+I might move to using a fixed ATM in the indicator settings instead of getting it dynamically from chart trader to fix both issues above.
+
 # Usage
 Trading from the chart is disabled by default to protect you from placing orders by mistake. You can turn it on by clicking the red button at the top right. Clicking the button again will disable the placing of orders.
 ## Buy
