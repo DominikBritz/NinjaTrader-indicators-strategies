@@ -11,12 +11,6 @@ Allows placing orders with a keyboard + mouse combination on a NinjaTrader chart
 2. Import it in NinjaTrader: `Tools -> Import -> NinjaScript Add-On...`
 3. Add the indicator *TradingFromChart* to the chart
 
-# Known issues
-1. ATM can't be *Custom*
-2. After an initial order is placed, no further orders can be placed. 
-
-I might move to using a fixed ATM in the indicator settings instead of getting it dynamically from chart trader to fix both issues above.
-
 # Usage
 Trading from the chart is disabled by default to protect you from placing orders by mistake. You can turn it on by clicking the red button at the top right. Clicking the button again will disable the placing of orders.
 ## Buy
@@ -36,10 +30,18 @@ The hotkey is configurable in the indicator settings.
 - Creates a stop sell order when below price. The order type is configurable in the indicator settings.
 
 ## Account and ATM
-The indicator automatically uses the account and ATM strategy you have set in chart trader.
+The indicator automatically uses the account you have set in chart trader. The ATM can be specified in the indicator settings.
 
 # Indicator settings
 ![indicator_settings](indicator_settings.png)
+
+## AtmStrategy
+### `Atm Strategy`
+
+The ATM strategy to use.
+
+Default: Empty
+
 ## Button layout
 ### `Top spacing`
 
