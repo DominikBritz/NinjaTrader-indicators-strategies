@@ -1,6 +1,6 @@
 # ProperSignalBar indicator
 
-Highlights a "proper signal bar" as taught by price action trader **Financially Free Trading** on [YouTube](https://www.youtube.com/watch?v=_U493Pl-dGg). Shows the SL, scalp, and runner targets on the chart, too.
+Highlights a "proper signal bar" as taught by price action trader **Financially Free Trading** on [YouTube](https://www.youtube.com/watch?v=_U493Pl-dGg). Shows the entry, stop loss, scalp, and runner targets on the chart, too.
 
 ![screenshot](screenshot.png)
 
