@@ -57,7 +57,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				
 				// Inputs target
 				TargetScalpLessTicksThanSL				= 4;
-				TargetRunnerTicks						= 24;
+				TargetRunnerTicks						= 30;
 				
 				// Plots
 				ShowTransparentPlotsInDataBox = true;  
@@ -199,7 +199,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 				
 				double SL = SignalBarSize + 2;
 				Draw.Text(this, "SignalBarSize"+CurrentBar, "SL: "+Convert.ToString(SL), 0, Low[0] - 6 * TickSize, Brushes.Yellow);
-				Draw.Line(this, "Scalp"+CurrentBar, false, 0, High[0] + ((SL-TargetScalpLessTicksThanSL) * TickSize), -1, High[0] + ((SL-TargetScalpLessTicksThanSL) * TickSize), Brushes.LimeGreen, DashStyleHelper.Solid, 2);
+				Draw.Line(this, "Entry"+CurrentBar, false, 0, High[0] + 1 * TickSize, -1, High[0] + 1 * TickSize, Brushes.HotPink, DashStyleHelper.Solid, 1);
+				Draw.Line(this, "Scalp"+CurrentBar, false, 0, High[0] + ((SL-TargetScalpLessTicksThanSL + 1) * TickSize), -1, High[0] + ((SL-TargetScalpLessTicksThanSL + 1) * TickSize), Brushes.LimeGreen, DashStyleHelper.Solid, 2);
 				Draw.Line(this, "Runner"+CurrentBar, false, 0, High[0] + 1 * TickSize + (TargetRunnerTicks * TickSize), -1, High[0] + 1 * TickSize + (TargetRunnerTicks * TickSize), Brushes.LimeGreen, DashStyleHelper.Solid, 5);
 			}
 							
@@ -270,7 +271,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 				
 				double SL = SignalBarSize + 2;
 				Draw.Text(this, "SignalBarSize"+CurrentBar, "SL: "+Convert.ToString(SL), 0, High[0] + 6 * TickSize, Brushes.Yellow);
-				Draw.Line(this, "Scalp"+CurrentBar, false, 0, Low[0] - ((SL-TargetScalpLessTicksThanSL) * TickSize), -1, Low[0] - ((SL-TargetScalpLessTicksThanSL) * TickSize), Brushes.Red, DashStyleHelper.Solid, 2);
+				Draw.Line(this, "Entry"+CurrentBar, false, 0, Low[0] - 1 * TickSize, -1, Low[0] - 1 * TickSize, Brushes.HotPink, DashStyleHelper.Solid, 1);
+				Draw.Line(this, "Scalp"+CurrentBar, false, 0, Low[0] - ((SL-TargetScalpLessTicksThanSL+1) * TickSize), -1, Low[0] - ((SL-TargetScalpLessTicksThanSL+1) * TickSize), Brushes.Red, DashStyleHelper.Solid, 2);
 				Draw.Line(this, "Runner"+CurrentBar, false, 0, Low[0] - 1 * TickSize - (TargetRunnerTicks * TickSize), -1, Low[0] - 1 * TickSize - (TargetRunnerTicks * TickSize), Brushes.Red, DashStyleHelper.Solid, 5);
 			}
 			
@@ -465,18 +467,18 @@ namespace NinjaTrader.NinjaScript.Indicators
 	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
 	{
 		private ProperSignalBar[] cacheProperSignalBar;
-		public ProperSignalBar ProperSignalBar(int barMaxSizeInTicks, int barMinSizeInTicks, int barCloseToHighLowInTicks, int barMinTickHigherLower, int barAwayFromEMAInTicks, int barMinBodyInTicks, int eMALength, int targetScalpLessTicksThanSL, int targetRunnerTicks)
+		public ProperSignalBar ProperSignalBar(int barMaxSizeInTicks, int barMinSizeInTicks, int barCloseToHighLowInTicks, int barMinTickHigherLower, int barAwayFromEMAInTicks, int barMinBodyInTicks, int eMALength, string alertFile, int targetScalpLessTicksThanSL, int targetRunnerTicks)
 		{
-			return ProperSignalBar(Input, barMaxSizeInTicks, barMinSizeInTicks, barCloseToHighLowInTicks, barMinTickHigherLower, barAwayFromEMAInTicks, barMinBodyInTicks, eMALength, targetScalpLessTicksThanSL, targetRunnerTicks);
+			return ProperSignalBar(Input, barMaxSizeInTicks, barMinSizeInTicks, barCloseToHighLowInTicks, barMinTickHigherLower, barAwayFromEMAInTicks, barMinBodyInTicks, eMALength, alertFile, targetScalpLessTicksThanSL, targetRunnerTicks);
 		}
 
-		public ProperSignalBar ProperSignalBar(ISeries<double> input, int barMaxSizeInTicks, int barMinSizeInTicks, int barCloseToHighLowInTicks, int barMinTickHigherLower, int barAwayFromEMAInTicks, int barMinBodyInTicks, int eMALength, int targetScalpLessTicksThanSL, int targetRunnerTicks)
+		public ProperSignalBar ProperSignalBar(ISeries<double> input, int barMaxSizeInTicks, int barMinSizeInTicks, int barCloseToHighLowInTicks, int barMinTickHigherLower, int barAwayFromEMAInTicks, int barMinBodyInTicks, int eMALength, string alertFile, int targetScalpLessTicksThanSL, int targetRunnerTicks)
 		{
 			if (cacheProperSignalBar != null)
 				for (int idx = 0; idx < cacheProperSignalBar.Length; idx++)
-					if (cacheProperSignalBar[idx] != null && cacheProperSignalBar[idx].BarMaxSizeInTicks == barMaxSizeInTicks && cacheProperSignalBar[idx].BarMinSizeInTicks == barMinSizeInTicks && cacheProperSignalBar[idx].BarCloseToHighLowInTicks == barCloseToHighLowInTicks && cacheProperSignalBar[idx].BarMinTickHigherLower == barMinTickHigherLower && cacheProperSignalBar[idx].BarAwayFromEMAInTicks == barAwayFromEMAInTicks && cacheProperSignalBar[idx].BarMinBodyInTicks == barMinBodyInTicks && cacheProperSignalBar[idx].EMALength == eMALength && cacheProperSignalBar[idx].TargetScalpLessTicksThanSL == targetScalpLessTicksThanSL && cacheProperSignalBar[idx].TargetRunnerTicks == targetRunnerTicks && cacheProperSignalBar[idx].EqualsInput(input))
+					if (cacheProperSignalBar[idx] != null && cacheProperSignalBar[idx].BarMaxSizeInTicks == barMaxSizeInTicks && cacheProperSignalBar[idx].BarMinSizeInTicks == barMinSizeInTicks && cacheProperSignalBar[idx].BarCloseToHighLowInTicks == barCloseToHighLowInTicks && cacheProperSignalBar[idx].BarMinTickHigherLower == barMinTickHigherLower && cacheProperSignalBar[idx].BarAwayFromEMAInTicks == barAwayFromEMAInTicks && cacheProperSignalBar[idx].BarMinBodyInTicks == barMinBodyInTicks && cacheProperSignalBar[idx].EMALength == eMALength && cacheProperSignalBar[idx].AlertFile == alertFile && cacheProperSignalBar[idx].TargetScalpLessTicksThanSL == targetScalpLessTicksThanSL && cacheProperSignalBar[idx].TargetRunnerTicks == targetRunnerTicks && cacheProperSignalBar[idx].EqualsInput(input))
 						return cacheProperSignalBar[idx];
-			return CacheIndicator<ProperSignalBar>(new ProperSignalBar(){ BarMaxSizeInTicks = barMaxSizeInTicks, BarMinSizeInTicks = barMinSizeInTicks, BarCloseToHighLowInTicks = barCloseToHighLowInTicks, BarMinTickHigherLower = barMinTickHigherLower, BarAwayFromEMAInTicks = barAwayFromEMAInTicks, BarMinBodyInTicks = barMinBodyInTicks, EMALength = eMALength, TargetScalpLessTicksThanSL = targetScalpLessTicksThanSL, TargetRunnerTicks = targetRunnerTicks }, input, ref cacheProperSignalBar);
+			return CacheIndicator<ProperSignalBar>(new ProperSignalBar(){ BarMaxSizeInTicks = barMaxSizeInTicks, BarMinSizeInTicks = barMinSizeInTicks, BarCloseToHighLowInTicks = barCloseToHighLowInTicks, BarMinTickHigherLower = barMinTickHigherLower, BarAwayFromEMAInTicks = barAwayFromEMAInTicks, BarMinBodyInTicks = barMinBodyInTicks, EMALength = eMALength, AlertFile = alertFile, TargetScalpLessTicksThanSL = targetScalpLessTicksThanSL, TargetRunnerTicks = targetRunnerTicks }, input, ref cacheProperSignalBar);
 		}
 	}
 }
@@ -485,14 +487,14 @@ namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
 {
 	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
 	{
-		public Indicators.ProperSignalBar ProperSignalBar(int barMaxSizeInTicks, int barMinSizeInTicks, int barCloseToHighLowInTicks, int barMinTickHigherLower, int barAwayFromEMAInTicks, int barMinBodyInTicks, int eMALength, int targetScalpLessTicksThanSL, int targetRunnerTicks)
+		public Indicators.ProperSignalBar ProperSignalBar(int barMaxSizeInTicks, int barMinSizeInTicks, int barCloseToHighLowInTicks, int barMinTickHigherLower, int barAwayFromEMAInTicks, int barMinBodyInTicks, int eMALength, string alertFile, int targetScalpLessTicksThanSL, int targetRunnerTicks)
 		{
-			return indicator.ProperSignalBar(Input, barMaxSizeInTicks, barMinSizeInTicks, barCloseToHighLowInTicks, barMinTickHigherLower, barAwayFromEMAInTicks, barMinBodyInTicks, eMALength, targetScalpLessTicksThanSL, targetRunnerTicks);
+			return indicator.ProperSignalBar(Input, barMaxSizeInTicks, barMinSizeInTicks, barCloseToHighLowInTicks, barMinTickHigherLower, barAwayFromEMAInTicks, barMinBodyInTicks, eMALength, alertFile, targetScalpLessTicksThanSL, targetRunnerTicks);
 		}
 
-		public Indicators.ProperSignalBar ProperSignalBar(ISeries<double> input , int barMaxSizeInTicks, int barMinSizeInTicks, int barCloseToHighLowInTicks, int barMinTickHigherLower, int barAwayFromEMAInTicks, int barMinBodyInTicks, int eMALength, int targetScalpLessTicksThanSL, int targetRunnerTicks)
+		public Indicators.ProperSignalBar ProperSignalBar(ISeries<double> input , int barMaxSizeInTicks, int barMinSizeInTicks, int barCloseToHighLowInTicks, int barMinTickHigherLower, int barAwayFromEMAInTicks, int barMinBodyInTicks, int eMALength, string alertFile, int targetScalpLessTicksThanSL, int targetRunnerTicks)
 		{
-			return indicator.ProperSignalBar(input, barMaxSizeInTicks, barMinSizeInTicks, barCloseToHighLowInTicks, barMinTickHigherLower, barAwayFromEMAInTicks, barMinBodyInTicks, eMALength, targetScalpLessTicksThanSL, targetRunnerTicks);
+			return indicator.ProperSignalBar(input, barMaxSizeInTicks, barMinSizeInTicks, barCloseToHighLowInTicks, barMinTickHigherLower, barAwayFromEMAInTicks, barMinBodyInTicks, eMALength, alertFile, targetScalpLessTicksThanSL, targetRunnerTicks);
 		}
 	}
 }
@@ -501,14 +503,14 @@ namespace NinjaTrader.NinjaScript.Strategies
 {
 	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
 	{
-		public Indicators.ProperSignalBar ProperSignalBar(int barMaxSizeInTicks, int barMinSizeInTicks, int barCloseToHighLowInTicks, int barMinTickHigherLower, int barAwayFromEMAInTicks, int barMinBodyInTicks, int eMALength, int targetScalpLessTicksThanSL, int targetRunnerTicks)
+		public Indicators.ProperSignalBar ProperSignalBar(int barMaxSizeInTicks, int barMinSizeInTicks, int barCloseToHighLowInTicks, int barMinTickHigherLower, int barAwayFromEMAInTicks, int barMinBodyInTicks, int eMALength, string alertFile, int targetScalpLessTicksThanSL, int targetRunnerTicks)
 		{
-			return indicator.ProperSignalBar(Input, barMaxSizeInTicks, barMinSizeInTicks, barCloseToHighLowInTicks, barMinTickHigherLower, barAwayFromEMAInTicks, barMinBodyInTicks, eMALength, targetScalpLessTicksThanSL, targetRunnerTicks);
+			return indicator.ProperSignalBar(Input, barMaxSizeInTicks, barMinSizeInTicks, barCloseToHighLowInTicks, barMinTickHigherLower, barAwayFromEMAInTicks, barMinBodyInTicks, eMALength, alertFile, targetScalpLessTicksThanSL, targetRunnerTicks);
 		}
 
-		public Indicators.ProperSignalBar ProperSignalBar(ISeries<double> input , int barMaxSizeInTicks, int barMinSizeInTicks, int barCloseToHighLowInTicks, int barMinTickHigherLower, int barAwayFromEMAInTicks, int barMinBodyInTicks, int eMALength, int targetScalpLessTicksThanSL, int targetRunnerTicks)
+		public Indicators.ProperSignalBar ProperSignalBar(ISeries<double> input , int barMaxSizeInTicks, int barMinSizeInTicks, int barCloseToHighLowInTicks, int barMinTickHigherLower, int barAwayFromEMAInTicks, int barMinBodyInTicks, int eMALength, string alertFile, int targetScalpLessTicksThanSL, int targetRunnerTicks)
 		{
-			return indicator.ProperSignalBar(input, barMaxSizeInTicks, barMinSizeInTicks, barCloseToHighLowInTicks, barMinTickHigherLower, barAwayFromEMAInTicks, barMinBodyInTicks, eMALength, targetScalpLessTicksThanSL, targetRunnerTicks);
+			return indicator.ProperSignalBar(input, barMaxSizeInTicks, barMinSizeInTicks, barCloseToHighLowInTicks, barMinTickHigherLower, barAwayFromEMAInTicks, barMinBodyInTicks, eMALength, alertFile, targetScalpLessTicksThanSL, targetRunnerTicks);
 		}
 	}
 }
