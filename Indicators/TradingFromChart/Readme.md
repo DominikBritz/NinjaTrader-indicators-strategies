@@ -30,17 +30,10 @@ The hotkey is configurable in the indicator settings.
 - Creates a stop sell order when below price. The order type is configurable in the indicator settings.
 
 ## Account and ATM
-The indicator automatically uses the account you have set in chart trader. The ATM can be specified in the indicator settings.
+The indicator automatically uses the account and ATM you have set in chart trader.
 
 # Indicator settings
 ![indicator_settings](indicator_settings.png)
-
-## AtmStrategy
-### `Atm Strategy`
-
-The ATM strategy to use.
-
-Default: Empty
 
 ## Button layout
 ### `Top spacing`

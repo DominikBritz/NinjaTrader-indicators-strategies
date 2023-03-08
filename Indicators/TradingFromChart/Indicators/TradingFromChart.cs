@@ -36,7 +36,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private ChartScale MyChartScale;
 		private Order myOrder;
 		private int myQuantity; 
-		private string myATM;
+		//private string myATM;
 		
 		private bool buyButton = false;
 		private bool sellButton = false;
@@ -77,8 +77,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 				
 				myButtonRightSpacing = 50;
 				myButtonTopSpacing = 10;
-				
-				AtmStrategy = String.Empty;
 
 			}
 		 	else if (State == State.DataLoaded)
@@ -95,15 +93,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 					ChartPanel.PreviewKeyDown += ChartPanel_PreviewKeyDown;
 					ChartPanel.PreviewKeyUp += ChartPanel_PreviewKeyUp;
 				}));
-				
-				if (AtmStrategy == String.Empty)
-				{
-					myATM = String.Empty;
-				}
-				else
-				{
-					myATM = AtmStrategy;
-				}
 				
 				switch (buyKey)
 				{
@@ -210,58 +199,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 				}));
    			}
 		}
-		
-		#region AtmStrategySelector converter
-        [TypeConverter(typeof(FriendlyAtmConverter))] // Converts the bool to string values
-        [PropertyEditor("NinjaTrader.Gui.Tools.StringStandardValuesEditorKey")] // Create the combo box on the property grid
-        [Display(Name = "Atm Strategy", Order = 1, GroupName = "AtmStrategy")]
-        public string AtmStrategy
-        { get; set; }		
-		
-		
-		// Since this is only being applied to a specific property rather than the whole class,
-		// we don't need to inherit from IndicatorBaseConverter and can just use a generic TypeConverter
-		public class FriendlyAtmConverter : TypeConverter
-		{
-		    // Set the values to appear in the combo box
-		    public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
-		    {
-		       List<string> values = new List<string>();
-				string[] files = System.IO.Directory.GetFiles(System.IO.Path.Combine(NinjaTrader.Core.Globals.UserDataDir, "templates", "AtmStrategy"), "*.xml");	
-				
-				foreach(string atm in files)
-				{
-					values.Add(System.IO.Path.GetFileNameWithoutExtension(atm));
-					NinjaTrader.Code.Output.Process(System.IO.Path.GetFileNameWithoutExtension(atm), PrintTo.OutputTab1);
-				}
-
-		        return new StandardValuesCollection(values);
-		    }
-
-		    public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
-		    {
-		        return value.ToString();
-		    }
-
-		    public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
-		    {
-		        return value;
-		    }
-
-		    // required interface members needed to compile
-		    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-		    { return true; }
-
-		    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
-		    { return true; }
-
-		    public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
-		    { return true; }
-
-		    public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
-		    { return true; }
-		}
-		#endregion
 
 		
 		private void OnButtonClick(object sender, RoutedEventArgs rea)
@@ -334,6 +271,10 @@ namespace NinjaTrader.NinjaScript.Indicators
 					NinjaTrader.Gui.Tools.AccountSelector accountSelector = (Window.GetWindow(ChartControl.Parent).FindFirst("ChartTraderControlAccountSelector") as NinjaTrader.Gui.Tools.AccountSelector);
 					myAccount = accountSelector.SelectedAccount;
 					
+					NinjaTrader.Gui.NinjaScript.AtmStrategy.AtmStrategySelector atmSelector = (Window.GetWindow(ChartControl.Parent).FindFirst("ChartTraderControlATMStrategySelector") as NinjaTrader.Gui.NinjaScript.AtmStrategy.AtmStrategySelector);
+					
+					
+					
 					if (buyButton == true)
 					{
 						if (priceClicked > Close[0])
@@ -358,14 +299,15 @@ namespace NinjaTrader.NinjaScript.Indicators
 						}
 					}
 					
-					if (string.IsNullOrEmpty(myATM) == false)
+					if (atmSelector.SelectedAtmStrategy != null)
 					{
-						NinjaTrader.NinjaScript.AtmStrategy.StartAtmStrategy(myATM, myOrder);
+						NinjaTrader.NinjaScript.AtmStrategy.StartAtmStrategy(atmSelector.SelectedAtmStrategy, myOrder);
 					}
 					
 					myAccount.Submit(new[] { myOrder});
 					
 				}, null);
+
 				
 				e.Handled = true;
 			}
@@ -386,10 +328,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 		}
 		
 		#endregion
-		
-		
-		
-		
 		
 		#region Properties
 		[Display(Name="Buy hotkey", Order=1,GroupName = "Hotkeys", Description="Choose a key binding for buys")]
