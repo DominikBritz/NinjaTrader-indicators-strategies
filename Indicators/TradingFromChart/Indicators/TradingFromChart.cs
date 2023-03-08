@@ -25,6 +25,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 {
 	public class TradingFromChart : Indicator
 	{
+		public override string DisplayName
+		{
+			get
+			{
+				return "Trading From Chart";
+			}
+		}
 		private Account myAccount;
 		private ChartScale MyChartScale;
 		private Order myOrder;
