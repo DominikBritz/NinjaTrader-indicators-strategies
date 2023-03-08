@@ -192,7 +192,17 @@ namespace NinjaTrader.NinjaScript.Indicators
 			{
 				IsProperSignalBar = 1;
 				
-				Alert("Proper signal bar"+CurrentBar, Priority.High, "Proper signal bar long", NinjaTrader.Core.Globals.InstallDir+@"\sounds\"+AlertFile, 0, Brushes.Green, Brushes.White);  
+				if (string.IsNullOrEmpty(AlertFile) == false)
+				{
+					try
+					{
+						Alert("Proper signal bar"+CurrentBar, Priority.High, "Proper signal bar long", NinjaTrader.Core.Globals.InstallDir+@"\sounds\"+AlertFile, 0, Brushes.Green, Brushes.White);  
+					}
+					catch (Exception e)
+					{
+						Print("Error playing alert file. Error message:\n" + e.Message);
+					}
+				}
 
 				Draw.TriangleUp(this, "BullishSignalBar"+CurrentBar, true, 0, Low[0] - 2 * TickSize, Brushes.Green);
 						
@@ -264,7 +274,17 @@ namespace NinjaTrader.NinjaScript.Indicators
 			{
 				IsProperSignalBar = -1;
 
-				Alert("Proper signal bar"+CurrentBar, Priority.High, "Proper signal bar short", NinjaTrader.Core.Globals.InstallDir+@"\sounds\"+AlertFile, 0, Brushes.Red, Brushes.White);  
+				if (string.IsNullOrEmpty(AlertFile) == false)
+				{
+					try
+					{
+						Alert("Proper signal bar"+CurrentBar, Priority.High, "Proper signal bar short", NinjaTrader.Core.Globals.InstallDir+@"\sounds\"+AlertFile, 0, Brushes.Red, Brushes.White);  
+					}
+					catch (Exception e)
+					{
+						Print("Error playing alert file. Error message:\n" + e.Message);
+					}
+				}
 				
 				Draw.TriangleDown(this, "BullishSignalBar"+CurrentBar, true, 0, High[0] + 2 * TickSize, Brushes.Red);
 						

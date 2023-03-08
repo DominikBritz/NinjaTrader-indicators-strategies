@@ -90,6 +90,6 @@ Default: 24
 
 ### `AlertFile`
 
-The indicator can play a sound when a signal bar has formed. 
+The indicator can play a sound when a signal bar has formed. Leave empty to disable alerts.
 
 Default: Alert.wav
