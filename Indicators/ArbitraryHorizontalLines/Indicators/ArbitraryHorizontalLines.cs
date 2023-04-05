@@ -178,7 +178,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		}		
 		
 		[NinjaScriptProperty]
-		[Display(Name="Width3", Order=3, GroupName="Group 3")]
+		[Display(Name="Width", Order=3, GroupName="Group 3")]
 		public int Width3
 		{ get; set; }
 		
