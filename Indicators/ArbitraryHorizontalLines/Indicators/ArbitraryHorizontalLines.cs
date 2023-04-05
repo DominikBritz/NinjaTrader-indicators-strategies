@@ -26,6 +26,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 {
 	public class ArbitraryHorizontalLines : Indicator
 	{
+		
+		private DashStyleHelper	myDashStyle1  = DashStyleHelper.Solid;
+		private DashStyleHelper	myDashStyle2  = DashStyleHelper.Solid;
+		private DashStyleHelper	myDashStyle3  = DashStyleHelper.Solid;
+		
 		protected override void OnStateChange()
 		{
 			if (State == State.SetDefaults)
@@ -60,29 +65,37 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 		protected override void OnBarUpdate()
 		{
-			string[] aPrices1 = Prices1.Split(',');
-			foreach (string Price1 in aPrices1)
+			string[] aPrices1 = (Prices1.Trim()).Split(',');
+			foreach (string x in aPrices1)
 			{
-				int iPrice1;
-				iPrice1 = Int32.Parse(Price1);
-				Draw.HorizontalLine(this, Price1, false, iPrice1, Color1, DashStyleHelper.Solid , Width1);
+				string Price = x.Trim();
+				double iPrice;
+				iPrice = double.Parse(Price, System.Globalization.CultureInfo.InvariantCulture);
+				HorizontalLine myHline = Draw.HorizontalLine(this, Price, iPrice, true, "");
+				myHline.Stroke = new Stroke(Color1, MyDashStyle1, Width1);
 			}
 			
-			string[] aPrices2 = Prices2.Split(',');
-			foreach (string Price2 in aPrices2)
+			string[] aPrices2 = (Prices2.Trim()).Split(',');
+			foreach (string x in aPrices2)
 			{
-				int iPrice2;
-				iPrice2 = Int32.Parse(Price2);
-				Draw.HorizontalLine(this, Price2, false, iPrice2, Color2, DashStyleHelper.Solid , Width2);
+				string Price = x.Trim();
+				double iPrice;
+				iPrice = double.Parse(Price, System.Globalization.CultureInfo.InvariantCulture);
+				HorizontalLine myHline = Draw.HorizontalLine(this, Price, iPrice, true, "");
+				myHline.Stroke = new Stroke(Color2, myDashStyle2, Width2);
 			}
 			
-			string[] aPrices3 = Prices3.Split(',');
-			foreach (string Price3 in aPrices3)
+			string[] aPrices3 = (Prices3.Trim()).Split(',');
+			foreach (string x in aPrices3)
 			{
-				int iPrice3;
-				iPrice3 = Int32.Parse(Price3);
-				Draw.HorizontalLine(this, Price3, false, iPrice3, Color3, DashStyleHelper.Solid , Width3);
+				string Price = x.Trim();
+				double iPrice;
+				iPrice = double.Parse(Price, System.Globalization.CultureInfo.InvariantCulture);
+				HorizontalLine myHline = Draw.HorizontalLine(this, Price, iPrice, true, "");
+				myHline.Stroke = new Stroke(Color3, myDashStyle3, Width3);
 			}
+			
+			
 		}
 
 		#region Properties
@@ -108,6 +121,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Display(Name="Width", Order=3, GroupName="Group 1")]
 		public int Width1
 		{ get; set; }
+		
+		[Display(ResourceType = typeof(Custom.Resource), Name = "Style", Description = "", GroupName = "Group 1", Order = 4)]
+		public DashStyleHelper MyDashStyle1				        
+		{
+			get { return myDashStyle1; }
+			set { myDashStyle1 = value; }
+		}
 
 		[NinjaScriptProperty]
 		[Display(Name="Prices", Order=1, GroupName="Group 2", Description="Enter prices comma separated without any spaces")]
@@ -131,6 +151,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Display(Name="Width", Order=3, GroupName="Group 2")]
 		public int Width2
 		{ get; set; }
+		
+		[Display(ResourceType = typeof(Custom.Resource), Name = "Style", Description = "", GroupName = "Group 2", Order = 4)]
+		public DashStyleHelper MyDashStyle2				        
+		{
+			get { return myDashStyle2; }
+			set { myDashStyle2 = value; }
+		}
 
 		[NinjaScriptProperty]
 		[Display(Name="Prices", Order=1, GroupName="Group 3", Description="Enter prices comma separated without any spaces")]
@@ -154,6 +181,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Display(Name="Width3", Order=3, GroupName="Group 3")]
 		public int Width3
 		{ get; set; }
+		
+		[Display(ResourceType = typeof(Custom.Resource), Name = "Style", Description = "", GroupName = "Group 3", Order = 4)]
+		public DashStyleHelper MyDashStyle3				        
+		{
+			get { return myDashStyle3; }
+			set { myDashStyle3 = value; }
+		}
 		#endregion
 
 	}
