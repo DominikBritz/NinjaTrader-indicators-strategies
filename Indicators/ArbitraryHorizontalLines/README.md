@@ -4,5 +4,10 @@ Draws an arbitrary number of horizontal lines on the chart. You may choose betwe
 
 Enter the prices comma separated without any spaces in the input box.
 
+## Installation
+1. Download the `ArbitraryHorizontalLines.zip` file 
+2. Import it in NinjaTrader: `Tools -> Import -> NinjaScript Add-On...`
+3. Add the indicator *ArbitraryHorizontalLines* to the chart
+
 ![screenshot](screenshot.png)
 
