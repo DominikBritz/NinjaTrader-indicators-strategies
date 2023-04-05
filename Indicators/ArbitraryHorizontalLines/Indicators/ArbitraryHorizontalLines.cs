@@ -87,7 +87,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 		#region Properties
 		[NinjaScriptProperty]
-		[Display(Name="Prices", Order=1, GroupName="Group 1")]
+		[Display(Name="Prices", Order=1, GroupName="Group 1", Description="Enter prices comma separated without any spaces")]
 		public string Prices1
 		{ get; set; }
 
@@ -110,7 +110,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		{ get; set; }
 
 		[NinjaScriptProperty]
-		[Display(Name="Prices", Order=1, GroupName="Group 2")]
+		[Display(Name="Prices", Order=1, GroupName="Group 2", Description="Enter prices comma separated without any spaces")]
 		public string Prices2
 		{ get; set; }
 
@@ -133,7 +133,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		{ get; set; }
 
 		[NinjaScriptProperty]
-		[Display(Name="Prices", Order=1, GroupName="Group 3")]
+		[Display(Name="Prices", Order=1, GroupName="Group 3", Description="Enter prices comma separated without any spaces")]
 		public string Prices3
 		{ get; set; }
 
