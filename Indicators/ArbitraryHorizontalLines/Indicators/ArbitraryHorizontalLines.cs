@@ -58,12 +58,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 				Color3					= Brushes.Red;
 				Width3					= 6;
 			}
-			else if (State == State.Configure)
+			else if (State == State.Historical)
 			{
+				DrawLines();
 			}
 		}
-
-		protected override void OnBarUpdate()
+		
+		private void DrawLines()
 		{
 			string[] aPrices1 = (Prices1.Trim()).Split(',');
 			foreach (string x in aPrices1)
@@ -94,7 +95,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 				HorizontalLine myHline = Draw.HorizontalLine(this, Price, iPrice, true, "");
 				myHline.Stroke = new Stroke(Color3, myDashStyle3, Width3);
 			}
+		}
+
+		protected override void OnBarUpdate()
+		{
 			
+			// nothing to do here
 			
 		}
 
@@ -178,7 +184,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		}		
 		
 		[NinjaScriptProperty]
-		[Display(Name="Width", Order=3, GroupName="Group 3")]
+		[Display(Name="Width3", Order=3, GroupName="Group 3")]
 		public int Width3
 		{ get; set; }
 		
