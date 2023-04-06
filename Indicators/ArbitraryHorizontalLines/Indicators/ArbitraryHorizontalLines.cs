@@ -58,7 +58,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				Color3					= Brushes.Red;
 				Width3					= 6;
 			}
-			else if (State == State.Historical)
+			else if (State == State.Transition)
 			{
 				DrawLines();
 			}
@@ -184,7 +184,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		}		
 		
 		[NinjaScriptProperty]
-		[Display(Name="Width3", Order=3, GroupName="Group 3")]
+		[Display(Name="Width", Order=3, GroupName="Group 3")]
 		public int Width3
 		{ get; set; }
 		
