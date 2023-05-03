@@ -66,34 +66,43 @@ namespace NinjaTrader.NinjaScript.Indicators
 		
 		private void DrawLines()
 		{
-			string[] aPrices1 = (Prices1.Trim()).Split(',');
-			foreach (string x in aPrices1)
+			if (string.IsNullOrEmpty(Prices1) == false)
 			{
-				string Price = x.Trim();
-				double iPrice;
-				iPrice = double.Parse(Price, System.Globalization.CultureInfo.InvariantCulture);
-				HorizontalLine myHline = Draw.HorizontalLine(this, Price, iPrice, true, "");
-				myHline.Stroke = new Stroke(Color1, MyDashStyle1, Width1);
+				string[] aPrices1 = (Prices1.Trim()).Split(';');
+				foreach (string x in aPrices1)
+				{
+					string Price = x.Trim();
+					double iPrice;
+					iPrice = double.Parse(Price, System.Globalization.CultureInfo.InvariantCulture);
+					HorizontalLine myHline = Draw.HorizontalLine(this, Price, iPrice, true, "");
+					myHline.Stroke = new Stroke(Color1, MyDashStyle1, Width1);
+				}
 			}
 			
-			string[] aPrices2 = (Prices2.Trim()).Split(',');
-			foreach (string x in aPrices2)
+			if (string.IsNullOrEmpty(Prices2) == false)
 			{
-				string Price = x.Trim();
-				double iPrice;
-				iPrice = double.Parse(Price, System.Globalization.CultureInfo.InvariantCulture);
-				HorizontalLine myHline = Draw.HorizontalLine(this, Price, iPrice, true, "");
-				myHline.Stroke = new Stroke(Color2, myDashStyle2, Width2);
+				string[] aPrices2 = (Prices2.Trim()).Split(';');
+				foreach (string x in aPrices2)
+				{
+					string Price = x.Trim();
+					double iPrice;
+					iPrice = double.Parse(Price, System.Globalization.CultureInfo.InvariantCulture);
+					HorizontalLine myHline = Draw.HorizontalLine(this, Price, iPrice, true, "");
+					myHline.Stroke = new Stroke(Color2, myDashStyle2, Width2);
+				}
 			}
 			
-			string[] aPrices3 = (Prices3.Trim()).Split(',');
-			foreach (string x in aPrices3)
+			if (string.IsNullOrEmpty(Prices3) == false)
 			{
-				string Price = x.Trim();
-				double iPrice;
-				iPrice = double.Parse(Price, System.Globalization.CultureInfo.InvariantCulture);
-				HorizontalLine myHline = Draw.HorizontalLine(this, Price, iPrice, true, "");
-				myHline.Stroke = new Stroke(Color3, myDashStyle3, Width3);
+				string[] aPrices3 = (Prices3.Trim()).Split(';');
+				foreach (string x in aPrices3)
+				{
+					string Price = x.Trim();
+					double iPrice;
+					iPrice = double.Parse(Price, System.Globalization.CultureInfo.InvariantCulture);
+					HorizontalLine myHline = Draw.HorizontalLine(this, Price, iPrice, true, "");
+					myHline.Stroke = new Stroke(Color3, myDashStyle3, Width3);
+				}
 			}
 		}
 

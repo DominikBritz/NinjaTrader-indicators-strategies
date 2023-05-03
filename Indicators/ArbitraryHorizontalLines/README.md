@@ -2,7 +2,7 @@
 
 Draws an arbitrary number of horizontal lines on the chart. You may choose between three color groups.
 
-Enter the prices comma separated without any spaces in the input box.
+Enter the prices separated by semicolon without any spaces in the input box.
 
 ## Installation
 1. Download the `ArbitraryHorizontalLines.zip` file 
