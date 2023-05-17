@@ -31,7 +31,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private EMA smma;
 		
 		private Series<double> tdf;
-		private Series<double> adjustedClose;
+		private Series<double> result;
 		
 		protected override void OnStateChange()
 		{
@@ -61,11 +61,22 @@ namespace NinjaTrader.NinjaScript.Indicators
 				BearBrush					= Brushes.Red;
 				NeutralBrush				= Brushes.Gray;
 				
+				ShowMarker					= true;
+				MarkerBullish				= "⬆️";
+				MarkerBearish				= "⬇️";
+				MarkerOffset				= 22;
+				MarkerSize					= 30;
+				
+				AlertFile					= @"Alert2.wav";
+				
 				AddPlot(NeutralBrush, "tdfi");
+				AddLine(new Stroke(Brushes.Gainsboro, DashStyleHelper.Dash, 1), FilterHigh, "Filter High");
+			    AddLine(new Stroke(Brushes.Gainsboro, DashStyleHelper.Dash, 1), FilterLow, "Filter Low");
 			}
 			else if (State == State.Configure)
 			{
 				tdf = new Series<double>(this);
+				result = new Series<double>(this);
 						
 			}
 		}
@@ -88,11 +99,51 @@ namespace NinjaTrader.NinjaScript.Indicators
 			tdf[0] = Math.Abs(tdftemp);
 			double highestTdf = MAX(tdf, Lookback * NLength)[0];
 			
-			double result = Math.Round(tdftemp / highestTdf, 2);
+			result[0] = Math.Round(tdftemp / highestTdf, 2);
 			
-			PlotBrushes[0][0] = result >= FilterHigh ? BullBrush : result <= FilterLow ? BearBrush : NeutralBrush;
+			if (result[0] >= FilterHigh && result[1] < FilterHigh)
+			{
+				if (ShowMarker == true)
+				{
+					Draw.Text(this, "Long "+ CurrentBar, false, MarkerBullish, 0, Low[0], - MarkerOffset, BullBrush, new NinjaTrader.Gui.Tools.SimpleFont("Arial", MarkerSize), TextAlignment.Center, Brushes.Transparent, Brushes.Transparent, 100);
+				}
+				
+				if (string.IsNullOrEmpty(AlertFile) == false)
+				{
+					try
+					{
+						Alert("TDFI Long"+CurrentBar, Priority.High, "TDFI Long", NinjaTrader.Core.Globals.InstallDir+@"\sounds\"+AlertFile, 0, Brushes.Green, Brushes.White);  
+					}
+					catch (Exception e)
+					{
+						Print("Error playing alert file. Error message:\n" + e.Message);
+					}
+				}
+			}
 			
-			Value[0] = result;
+			if (result[0] <= FilterLow && result[1] > FilterLow)
+			{
+				if (ShowMarker == true)
+				{
+					Draw.Text(this, "Short "+ CurrentBar, false, MarkerBearish, 0, High[0], + MarkerOffset, BearBrush, new NinjaTrader.Gui.Tools.SimpleFont("Arial", MarkerSize), TextAlignment.Center, Brushes.Transparent, Brushes.Transparent, 100);
+				}
+				
+				if (string.IsNullOrEmpty(AlertFile) == false)
+				{
+					try
+					{
+						Alert("TDFI Short"+CurrentBar, Priority.High, "TDFI Short", NinjaTrader.Core.Globals.InstallDir+@"\sounds\"+AlertFile, 0, Brushes.Red, Brushes.White);  
+					}
+					catch (Exception e)
+					{
+						Print("Error playing alert file. Error message:\n" + e.Message);
+					}
+				}
+			}
+			
+			
+			PlotBrushes[0][0] = result[0] >= FilterHigh ? BullBrush : result[0] <= FilterLow ? BearBrush : NeutralBrush;
+            Value[0] = result[0];
 			
 		}
 		
@@ -129,8 +180,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 		public double FilterLow
 		{ get; set; }
 		
+		[NinjaScriptProperty]
+		[Display(Name="Alert sound", Order=8, Description="Clear the input if you don't want any sounds.", GroupName="Parameters")]
+		public string AlertFile
+		{ get; set; }
+		
 		[XmlIgnore()]
-		[Display(Name = "Bull Color", GroupName="Colors", Order=1)]
+		[Display(Name = "Bull Color", GroupName="Optics", Order=1)]
 		public Brush BullBrush
 		{ get; set; }
 
@@ -142,7 +198,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		}
 		
 		[XmlIgnore()]
-		[Display(Name = "Bear Color", GroupName="Colors", Order=2)]
+		[Display(Name = "Bear Color", GroupName="Optics", Order=2)]
 		public Brush BearBrush
 		{ get; set; }
 
@@ -154,7 +210,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		}
 		
 		[XmlIgnore()]
-		[Display(Name = "Neutral Color", GroupName="Colors", Order=3)]
+		[Display(Name = "Neutral Color", GroupName="Optics", Order=3)]
 		public Brush NeutralBrush
 		{ get; set; }
 
@@ -165,7 +221,33 @@ namespace NinjaTrader.NinjaScript.Indicators
    			set { NeutralBrush = Serialize.StringToBrush(value); }
 		}
 		
+		[XmlIgnore()]
+		[Display(Name = "Show Marker", GroupName="Optics", Order=4)]
+		public bool ShowMarker
+		{ get; set; }
 		
+		[XmlIgnore()]
+		[Display(Name = "  --> Marker Long", GroupName="Optics", Order=5)]
+		public string MarkerBullish
+		{ get; set; }
+		
+		[XmlIgnore()]
+		[Display(Name = "  --> Marker Short", GroupName="Optics", Order=6)]
+		public string MarkerBearish
+		{ get; set; }
+		
+		[XmlIgnore()]
+		[Display(Name = "  --> Bar Offset", GroupName="Optics", Order=7)]
+		public int MarkerOffset
+		{ get; set; }
+		
+		[XmlIgnore()]
+		[Display(Name = "  --> Size", GroupName="Optics", Order=8)]
+		public int MarkerSize
+		{ get; set; }
+		
+		
+		// strategy plots
 		[Browsable(false)]
 		[XmlIgnore]
 		public Series<double> pTDFI
@@ -188,18 +270,18 @@ namespace NinjaTrader.NinjaScript.Indicators
 	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
 	{
 		private TDFI[] cacheTDFI;
-		public TDFI TDFI(int lookback, int mMALength, int smmaLength, int nLength, double filterHigh, double filterLow)
+		public TDFI TDFI(int lookback, int mMALength, int smmaLength, int nLength, double filterHigh, double filterLow, string alertFile)
 		{
-			return TDFI(Input, lookback, mMALength, smmaLength, nLength, filterHigh, filterLow);
+			return TDFI(Input, lookback, mMALength, smmaLength, nLength, filterHigh, filterLow, alertFile);
 		}
 
-		public TDFI TDFI(ISeries<double> input, int lookback, int mMALength, int smmaLength, int nLength, double filterHigh, double filterLow)
+		public TDFI TDFI(ISeries<double> input, int lookback, int mMALength, int smmaLength, int nLength, double filterHigh, double filterLow, string alertFile)
 		{
 			if (cacheTDFI != null)
 				for (int idx = 0; idx < cacheTDFI.Length; idx++)
-					if (cacheTDFI[idx] != null && cacheTDFI[idx].Lookback == lookback && cacheTDFI[idx].MMALength == mMALength && cacheTDFI[idx].SmmaLength == smmaLength && cacheTDFI[idx].NLength == nLength && cacheTDFI[idx].FilterHigh == filterHigh && cacheTDFI[idx].FilterLow == filterLow && cacheTDFI[idx].EqualsInput(input))
+					if (cacheTDFI[idx] != null && cacheTDFI[idx].Lookback == lookback && cacheTDFI[idx].MMALength == mMALength && cacheTDFI[idx].SmmaLength == smmaLength && cacheTDFI[idx].NLength == nLength && cacheTDFI[idx].FilterHigh == filterHigh && cacheTDFI[idx].FilterLow == filterLow && cacheTDFI[idx].AlertFile == alertFile && cacheTDFI[idx].EqualsInput(input))
 						return cacheTDFI[idx];
-			return CacheIndicator<TDFI>(new TDFI(){ Lookback = lookback, MMALength = mMALength, SmmaLength = smmaLength, NLength = nLength, FilterHigh = filterHigh, FilterLow = filterLow }, input, ref cacheTDFI);
+			return CacheIndicator<TDFI>(new TDFI(){ Lookback = lookback, MMALength = mMALength, SmmaLength = smmaLength, NLength = nLength, FilterHigh = filterHigh, FilterLow = filterLow, AlertFile = alertFile }, input, ref cacheTDFI);
 		}
 	}
 }
@@ -208,14 +290,14 @@ namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
 {
 	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
 	{
-		public Indicators.TDFI TDFI(int lookback, int mMALength, int smmaLength, int nLength, double filterHigh, double filterLow)
+		public Indicators.TDFI TDFI(int lookback, int mMALength, int smmaLength, int nLength, double filterHigh, double filterLow, string alertFile)
 		{
-			return indicator.TDFI(Input, lookback, mMALength, smmaLength, nLength, filterHigh, filterLow);
+			return indicator.TDFI(Input, lookback, mMALength, smmaLength, nLength, filterHigh, filterLow, alertFile);
 		}
 
-		public Indicators.TDFI TDFI(ISeries<double> input , int lookback, int mMALength, int smmaLength, int nLength, double filterHigh, double filterLow)
+		public Indicators.TDFI TDFI(ISeries<double> input , int lookback, int mMALength, int smmaLength, int nLength, double filterHigh, double filterLow, string alertFile)
 		{
-			return indicator.TDFI(input, lookback, mMALength, smmaLength, nLength, filterHigh, filterLow);
+			return indicator.TDFI(input, lookback, mMALength, smmaLength, nLength, filterHigh, filterLow, alertFile);
 		}
 	}
 }
@@ -224,14 +306,14 @@ namespace NinjaTrader.NinjaScript.Strategies
 {
 	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
 	{
-		public Indicators.TDFI TDFI(int lookback, int mMALength, int smmaLength, int nLength, double filterHigh, double filterLow)
+		public Indicators.TDFI TDFI(int lookback, int mMALength, int smmaLength, int nLength, double filterHigh, double filterLow, string alertFile)
 		{
-			return indicator.TDFI(Input, lookback, mMALength, smmaLength, nLength, filterHigh, filterLow);
+			return indicator.TDFI(Input, lookback, mMALength, smmaLength, nLength, filterHigh, filterLow, alertFile);
 		}
 
-		public Indicators.TDFI TDFI(ISeries<double> input , int lookback, int mMALength, int smmaLength, int nLength, double filterHigh, double filterLow)
+		public Indicators.TDFI TDFI(ISeries<double> input , int lookback, int mMALength, int smmaLength, int nLength, double filterHigh, double filterLow, string alertFile)
 		{
-			return indicator.TDFI(input, lookback, mMALength, smmaLength, nLength, filterHigh, filterLow);
+			return indicator.TDFI(input, lookback, mMALength, smmaLength, nLength, filterHigh, filterLow, alertFile);
 		}
 	}
 }
