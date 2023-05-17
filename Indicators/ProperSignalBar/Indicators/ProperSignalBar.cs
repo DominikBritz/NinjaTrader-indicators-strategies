@@ -286,7 +286,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 					}
 				}
 				
-				Draw.TriangleDown(this, "BullishSignalBar"+CurrentBar, true, 0, High[0] + 2 * TickSize, Brushes.Red);
+				Draw.TriangleDown(this, "BearishSignalBar"+CurrentBar, true, 0, High[0] + 2 * TickSize, Brushes.Red);
 						
 				
 				double SL = SignalBarSize + 2;
