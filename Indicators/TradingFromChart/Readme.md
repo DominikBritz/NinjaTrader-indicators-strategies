@@ -12,7 +12,7 @@ Allows placing orders with a keyboard + mouse combination on a NinjaTrader chart
 3. Add the indicator *TradingFromChart* to the chart
 
 # Usage
-Trading from the chart is disabled by default to protect you from placing orders by mistake. You can turn it on by clicking the red button at the top right. Clicking the button again will disable the placing of orders.
+Trading from the chart is disabled by default to protect you from placing orders by mistake. You can turn it on by clicking the red button on the chart trader. Clicking the button again will disable the placing of orders.
 ## Buy
 ```
 Left shift + left mouse
