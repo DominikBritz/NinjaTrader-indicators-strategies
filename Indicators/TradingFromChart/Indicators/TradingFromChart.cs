@@ -47,15 +47,24 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private Key kbuyKey;
 		private Key ksellKey;
 		
-		private StopOrderTypes stopOrderType = StopOrderTypes.StopLimit;
+		private StopOrderTypes stopOrderType = StopOrderTypes.StopMarket;
 		private OrderType orderType;
 		
-		private bool myButtonClicked = false;
-		private System.Windows.Controls.Button myButton;
-		private System.Windows.Controls.Grid myGrid;
 		private bool tradingFromChart = false;
 		
-
+		#region Chart Trader Buttons
+		
+		private System.Windows.Controls.RowDefinition	addedRow;
+		private Gui.Chart.ChartTab						chartTab;
+		private Gui.Chart.Chart							chartWindow;
+		private System.Windows.Controls.Grid			chartTraderGrid, chartTraderButtonsGrid, lowerButtonsGrid;
+		private System.Windows.Controls.Button			activateButton1;
+		private bool									panelActive;
+		private System.Windows.Controls.TabItem			tabItem;
+		
+		private bool myButtonClicked = false;
+		
+		#endregion
 
 		protected override void OnStateChange()
 		{
@@ -73,16 +82,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 				PaintPriceMarkers							= true;
 				ScaleJustification							= NinjaTrader.Gui.Chart.ScaleJustification.Right;
 				IsSuspendedWhileInactive					= true;
-				
-				
-				myButtonRightSpacing = 50;
-				myButtonTopSpacing = 10;
 
 			}
 		 	else if (State == State.DataLoaded)
   			{
-   				if (ChartControl != null)
-    				ChartControl.MouseLeftButtonDown += LeftMouseDown;
+				if (ChartControl != null)
+				ChartControl.MouseLeftButtonDown += LeftMouseDown;
 				
 				if (ChartControl != null)
 					ChartPanel.MouseMove += ChartControl_MouseMove;
@@ -140,41 +145,27 @@ namespace NinjaTrader.NinjaScript.Indicators
 				{
 					orderType = OrderType.StopMarket;
 				}
+   		}
+
+			else if (State == State.Historical)
+			{
+				#region Chart Trader Buttons Load
 				
-				if (UserControlCollection.Contains(myGrid))
-					return;
-				
-				Dispatcher.InvokeAsync((() =>
+				if (ChartControl != null)
 				{
-					myGrid = new System.Windows.Controls.Grid
+					ChartControl.Dispatcher.InvokeAsync(() =>
 					{
-						Name = "MyCustomGrid", HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Top
-					};
-					
-					System.Windows.Controls.ColumnDefinition column1 = new System.Windows.Controls.ColumnDefinition();
-					
-					myGrid.ColumnDefinitions.Add(column1);
-					
-					myButton = new System.Windows.Controls.Button
-					{
-						Name = "myButton", Content = "Trading from chart off", Foreground = Brushes.White, Background = Brushes.Red, Margin = new Thickness(0, myButtonTopSpacing, myButtonRightSpacing, 0)
-					};
-					
-					myButton.Click += OnButtonClick;
+						CreateWPFControls();
+					});
+				}
+				
+				#endregion
+			}
 
-					System.Windows.Controls.Grid.SetColumn(myButton, 0);
-
-					
-					myGrid.Children.Add(myButton);
-					
-					UserControlCollection.Add(myGrid);
-				}));
-
-   			}
-   			else if (State == State.Terminated)
-   			{
-	    		if (ChartControl != null)
-	     			ChartControl.MouseLeftButtonDown -= LeftMouseDown;
+			else if (State == State.Terminated)
+			{
+				if (ChartControl != null)
+					ChartControl.MouseLeftButtonDown -= LeftMouseDown;
 				
 				if (ChartControl != null)
 					ChartPanel.MouseMove -= ChartControl_MouseMove;
@@ -184,43 +175,244 @@ namespace NinjaTrader.NinjaScript.Indicators
 					ChartPanel.PreviewKeyDown -= ChartPanel_PreviewKeyDown;
 					ChartPanel.PreviewKeyUp -= ChartPanel_PreviewKeyUp;
 				}
+
+				#region Chart Trader Termninate
 				
-				Dispatcher.InvokeAsync((() =>
+				if (ChartControl != null)
 				{
-					if (myGrid != null)
+					ChartControl.Dispatcher.InvokeAsync(() =>
 					{
-						if (myButton != null)
-						{
-							myGrid.Children.Remove(myButton);
-							myButton.Click -= OnButtonClick;
-							myButton = null;
-						}
-					}
-				}));
-   			}
+						DisposeWPFControls();
+					});
+				}
+				
+				#endregion
+			}
 		}
 
-		
-		private void OnButtonClick(object sender, RoutedEventArgs rea)
+		#region Button Click Events
+		protected void Button1Click(object sender, RoutedEventArgs e)
 		{
-			//System.Windows.Controls.Button button = sender as System.Windows.Controls.Button;
-			
 			if (myButtonClicked == false)
 			{
-				myButton.Content = "Trading from chart on";
-				myButton.Background = Brushes.Green;
+				activateButton1.Background		= Brushes.Green;
+				activateButton1.Content = "Trading from chart on";
 				tradingFromChart = true;
 				myButtonClicked = true;
 			}
 			else
 			{
-				myButton.Content = "Trading from chart off";
-				myButton.Background = Brushes.Red;
+				activateButton1.Background		= Brushes.Red;
+				activateButton1.Content = "Trading from chart off";
 				tradingFromChart = false;
 				myButtonClicked = false;
 			}
+			
+			
 		}
 		
+		#endregion
+		
+		protected void CreateWPFControls()
+		{
+			#region CreateWPFControls
+			
+				#region Button Grid
+			
+			
+			
+			chartWindow				= Window.GetWindow(ChartControl.Parent) as Gui.Chart.Chart;
+			
+			// if not added to a chart, do nothing
+			if (chartWindow == null)
+				return;
+			
+
+			chartTraderGrid			= (chartWindow.FindFirst("ChartWindowChartTraderControl") as Gui.Chart.ChartTrader).Content as System.Windows.Controls.Grid;
+
+			// this grid contains the existing chart trader buttons
+			chartTraderButtonsGrid	= chartTraderGrid.Children[0] as System.Windows.Controls.Grid;
+			
+
+			// Lower Grid - (Row1)Upper
+			lowerButtonsGrid = new System.Windows.Controls.Grid();
+			System.Windows.Controls.Grid.SetColumnSpan(lowerButtonsGrid, 1);
+	
+			//Columns * 1
+			lowerButtonsGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition());			
+			
+			
+			addedRow	= new System.Windows.Controls.RowDefinition() { Height = new GridLength(40) };
+				
+
+			// this style (provided by NinjaTrader_MichaelM) gives the correct default minwidth (and colors) to make buttons appear like chart trader buttons
+			Style basicButtonStyle	= Application.Current.FindResource("BasicEntryButton") as Style;
+	
+			
+			#endregion
+			
+			
+				#region Button Content
+				
+				
+					activateButton1 = new System.Windows.Controls.Button()//1
+					{		
+						
+						Content			= "Trading from chart off",
+						Height			= 25, 
+						Margin			= new Thickness(5,0,5,0),
+						Padding			= new Thickness(0,0,0,0),
+						Style			= basicButtonStyle
+					};		
+			
+				#endregion
+					
+	
+				#region Button Colors
+					
+					//Row1
+					activateButton1.Background		= Brushes.Red;
+					activateButton1.BorderBrush		= Brushes.Black;	
+					activateButton1.Foreground    	= Brushes.White;	
+					activateButton1.BorderThickness = new Thickness(2.0);
+			#endregion	
+					
+		
+				#region Button Click 
+				
+					activateButton1.Click += Button1Click;
+				
+				#endregion	
+					
+					
+				#region Button Location
+		
+					//Row 1
+					System.Windows.Controls.Grid.SetColumn(activateButton1, 0);				
+					System.Windows.Controls.Grid.SetRow(activateButton1, 0);	
+				
+				#endregion	
+					
+					
+				
+				#region Add Buttons 1
+			
+					lowerButtonsGrid.Children.Add(activateButton1);
+				
+				#endregion
+					
+					
+					
+					
+            if (totalGrids == 0) 
+				totalGrids = chartTraderGrid.RowDefinitions.Count;
+
+
+			if (TabSelected())
+				InsertWPFControls();
+
+			chartWindow.MainTabControl.SelectionChanged += TabChangedHandler;
+			#endregion
+			
+		}
+		
+		static int totalGrids;
+
+        public void DisposeWPFControls() 
+		{
+			#region Dispose
+			
+			if (chartWindow != null)
+				chartWindow.MainTabControl.SelectionChanged -= TabChangedHandler;
+			
+			//Row 1
+			if (activateButton1 != null)
+				activateButton1.Click -= Button1Click;
+			
+			RemoveWPFControls();
+			
+			#endregion
+		}
+		
+		public void InsertWPFControls()
+		{
+			#region Insert WPF
+			
+			if (panelActive)
+				return;
+			
+			
+			// add a new row (addedRow) for our lowerButtonsGrid below the ask and bid prices and pnl display			
+			chartTraderGrid.RowDefinitions.Add(addedRow);
+			System.Windows.Controls.Grid.SetRow(lowerButtonsGrid, totalGrids); 
+			chartTraderGrid.Children.Add(lowerButtonsGrid);
+			
+			panelActive = true;
+			
+			#endregion	
+		}
+		
+		private bool TabSelected()
+		{
+			#region TabSelected 
+			
+			if (ChartControl == null || chartWindow == null || chartWindow.MainTabControl == null )
+				return false;
+			
+			bool tabSelected = false;
+
+			// loop through each tab and see if the tab this indicator is added to is the selected item
+			foreach (System.Windows.Controls.TabItem tab in chartWindow.MainTabControl.Items)
+				if ((tab.Content as Gui.Chart.ChartTab).ChartControl == ChartControl && tab == chartWindow.MainTabControl.SelectedItem)
+					tabSelected = true;
+
+			return tabSelected;
+				
+			#endregion
+		}
+		
+		protected void RemoveWPFControls()
+		{
+			#region Remove WPF
+			
+			if (!panelActive)
+				return;
+
+			if (chartTraderButtonsGrid != null || lowerButtonsGrid != null)
+			{
+				chartTraderGrid.Children.Remove(lowerButtonsGrid);
+				
+				chartTraderGrid.RowDefinitions.Remove(addedRow);
+			}
+			
+			panelActive = false;
+			
+			#endregion
+		}
+		
+		private void TabChangedHandler(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+		{	
+			#region TabHandler
+			
+			if (e.AddedItems.Count <= 0)
+				return;
+
+			tabItem = e.AddedItems[0] as System.Windows.Controls.TabItem;
+			if (tabItem == null)
+				return;
+
+			chartTab = tabItem.Content as Gui.Chart.ChartTab;
+			if (chartTab == null)
+				return;
+
+			if (TabSelected())
+				InsertWPFControls();
+			else
+				RemoveWPFControls();
+			
+			#endregion
+		}
+
 
 		protected override void OnBarUpdate()
 		{
@@ -351,17 +543,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 			set { stopOrderType = value; }
 		}
 		
-		[NinjaScriptProperty]
-		[Range(0, int.MaxValue)]
-		[Display(Name="Top spacing", Order=1, GroupName="Button layout")]
-		public int myButtonTopSpacing
-		{ get; set; }
-		
-		[NinjaScriptProperty]
-		[Range(0, int.MaxValue)]
-		[Display(Name="Right spacing", Order=2, GroupName="Button layout")]
-		public int myButtonRightSpacing
-		{ get; set; }
 		#endregion
 	}
 }
@@ -387,18 +568,18 @@ namespace NinjaTrader.NinjaScript.Indicators
 	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
 	{
 		private TradingFromChart[] cacheTradingFromChart;
-		public TradingFromChart TradingFromChart(int myButtonTopSpacing, int myButtonRightSpacing)
+		public TradingFromChart TradingFromChart()
 		{
-			return TradingFromChart(Input, myButtonTopSpacing, myButtonRightSpacing);
+			return TradingFromChart(Input);
 		}
 
-		public TradingFromChart TradingFromChart(ISeries<double> input, int myButtonTopSpacing, int myButtonRightSpacing)
+		public TradingFromChart TradingFromChart(ISeries<double> input)
 		{
 			if (cacheTradingFromChart != null)
 				for (int idx = 0; idx < cacheTradingFromChart.Length; idx++)
-					if (cacheTradingFromChart[idx] != null && cacheTradingFromChart[idx].myButtonTopSpacing == myButtonTopSpacing && cacheTradingFromChart[idx].myButtonRightSpacing == myButtonRightSpacing && cacheTradingFromChart[idx].EqualsInput(input))
+					if (cacheTradingFromChart[idx] != null &&  cacheTradingFromChart[idx].EqualsInput(input))
 						return cacheTradingFromChart[idx];
-			return CacheIndicator<TradingFromChart>(new TradingFromChart(){ myButtonTopSpacing = myButtonTopSpacing, myButtonRightSpacing = myButtonRightSpacing }, input, ref cacheTradingFromChart);
+			return CacheIndicator<TradingFromChart>(new TradingFromChart(), input, ref cacheTradingFromChart);
 		}
 	}
 }
@@ -407,14 +588,14 @@ namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
 {
 	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
 	{
-		public Indicators.TradingFromChart TradingFromChart(int myButtonTopSpacing, int myButtonRightSpacing)
+		public Indicators.TradingFromChart TradingFromChart()
 		{
-			return indicator.TradingFromChart(Input, myButtonTopSpacing, myButtonRightSpacing);
+			return indicator.TradingFromChart(Input);
 		}
 
-		public Indicators.TradingFromChart TradingFromChart(ISeries<double> input , int myButtonTopSpacing, int myButtonRightSpacing)
+		public Indicators.TradingFromChart TradingFromChart(ISeries<double> input )
 		{
-			return indicator.TradingFromChart(input, myButtonTopSpacing, myButtonRightSpacing);
+			return indicator.TradingFromChart(input);
 		}
 	}
 }
@@ -423,14 +604,14 @@ namespace NinjaTrader.NinjaScript.Strategies
 {
 	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
 	{
-		public Indicators.TradingFromChart TradingFromChart(int myButtonTopSpacing, int myButtonRightSpacing)
+		public Indicators.TradingFromChart TradingFromChart()
 		{
-			return indicator.TradingFromChart(Input, myButtonTopSpacing, myButtonRightSpacing);
+			return indicator.TradingFromChart(Input);
 		}
 
-		public Indicators.TradingFromChart TradingFromChart(ISeries<double> input , int myButtonTopSpacing, int myButtonRightSpacing)
+		public Indicators.TradingFromChart TradingFromChart(ISeries<double> input )
 		{
-			return indicator.TradingFromChart(input, myButtonTopSpacing, myButtonRightSpacing);
+			return indicator.TradingFromChart(input);
 		}
 	}
 }

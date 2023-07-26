@@ -35,19 +35,6 @@ The indicator automatically uses the account and ATM you have set in chart trade
 # Indicator settings
 ![indicator_settings](indicator_settings.png)
 
-## Button layout
-### `Top spacing`
-
-Space between the top of the button and the chart window
-
-Default: 10
-
-### `Right spacing`
-
-Space between the right of the button and the chart window
-
-Default: 10
-
 ## Hotkeys
 ### `Buy hotkey`
 Hotkey for buy orders
@@ -61,7 +48,7 @@ Default: RightShift
 ### `Stop order type`
 Select if you want to place stop market or stop limit orders
 
-Default: StopLimit
+Default: StopMarket
 
 # Credits
 Based on this NinjaTrader [support forum post by Mindset](https://ninjatrader.com/support/forum/forum/suggestions-and-feedback/suggestions-and-feedback-aa/1145221-chart-trading-from-charts-with-one-click?p=1206610#post1206610)
