@@ -1,0 +1,31 @@
+# ZIPs all indicator files
+
+name: ZIP TradeToDiscord
+
+on:
+  push:
+    paths:
+      - 'Indicators/TradeToDiscord/Indicators/**'
+      - 'Indicators/TradeToDiscord/Info.xml'
+
+  # Allow running this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  zip-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+      - uses: JesseTG/rm@v1.0.3
+        with:
+          path: "Indicators/TradeToDiscord/TradeToDiscord.zip"
+      - name: install zip
+        uses: montudor/action-zip@v1
+      - name: zip output
+        run: zip -q -r -l TradeToDiscord.zip Indicators Info.xml
+        working-directory: Indicators/TradeToDiscord
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update zip file
