@@ -36,13 +36,15 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private ChartScale MyChartScale;
 		private Order myOrder;
 		private int myQuantity; 
-		//private string myATM;
 		
 		private bool buyButton = false;
 		private bool sellButton = false;
 		
 		private DesiredKey buyKey = DesiredKey.LeftShift;
 		private DesiredKey sellKey = DesiredKey.LeftAlt;
+		
+		private MouseButton buyMouse = MouseButton.Left;
+		private MouseButton sellMouse = MouseButton.Right; 
 		
 		private Key kbuyKey;
 		private Key ksellKey;
@@ -87,7 +89,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 		 	else if (State == State.DataLoaded)
   			{
 				if (ChartControl != null)
-				ChartControl.MouseLeftButtonDown += LeftMouseDown;
+					ChartControl.MouseLeftButtonDown += LeftMouseDown;
+					ChartControl.MouseRightButtonDown += RightMouseDown;
 				
 				if (ChartControl != null)
 					ChartPanel.MouseMove += ChartControl_MouseMove;
@@ -137,6 +140,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 						break;
 				}
 				
+				
 				if (stopOrderType == StopOrderTypes.StopLimit)
 				{
 					orderType = OrderType.StopLimit;
@@ -166,6 +170,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			{
 				if (ChartControl != null)
 					ChartControl.MouseLeftButtonDown -= LeftMouseDown;
+					ChartControl.MouseRightButtonDown -= RightMouseDown;
 				
 				if (ChartControl != null)
 					ChartPanel.MouseMove -= ChartControl_MouseMove;
@@ -446,63 +451,85 @@ namespace NinjaTrader.NinjaScript.Indicators
 			
 		}
 		
+		private void PlaceOrder(int OrderDirection, MouseButtonEventArgs e)
+		{
+			TriggerCustomEvent(o =>
+			{
+				int Y = ChartingExtensions.ConvertToVerticalPixels(e.GetPosition(ChartControl as IInputElement).Y, ChartControl.PresentationSource);
+				
+				double priceClicked = MyChartScale.GetValueByY(Y);
+			
+				// get account, quantity, and ATM of chart trader
+				NinjaTrader.Gui.Tools.QuantityUpDown quantitySelector = (Window.GetWindow(ChartControl.Parent).FindFirst("ChartTraderControlQuantitySelector") as NinjaTrader.Gui.Tools.QuantityUpDown);
+				myQuantity = quantitySelector.Value;
+				
+				NinjaTrader.Gui.Tools.AccountSelector accountSelector = (Window.GetWindow(ChartControl.Parent).FindFirst("ChartTraderControlAccountSelector") as NinjaTrader.Gui.Tools.AccountSelector);
+				myAccount = accountSelector.SelectedAccount;
+				
+				NinjaTrader.Gui.NinjaScript.AtmStrategy.AtmStrategySelector atmSelector = (Window.GetWindow(ChartControl.Parent).FindFirst("ChartTraderControlATMStrategySelector") as NinjaTrader.Gui.NinjaScript.AtmStrategy.AtmStrategySelector);
+				
+				
+				// Long
+				if (OrderDirection == 1)
+				{
+					if (priceClicked > Close[0])
+					{	
+						myOrder = myAccount.CreateOrder(Instrument, OrderAction.Buy, orderType, OrderEntry.Manual, TimeInForce.Day, myQuantity, priceClicked, priceClicked, "", "Entry", DateTime.MaxValue, null);
+					}
+					else if (priceClicked < Close[0])
+					{
+						myOrder = myAccount.CreateOrder(Instrument, OrderAction.Buy, OrderType.Limit, OrderEntry.Manual, TimeInForce.Day, myQuantity, priceClicked, 0, "", "Entry", DateTime.MaxValue, null);
+					}
+				}
+				
+				// Short
+				if (OrderDirection == 2)
+				{
+					if (priceClicked < Close[0])
+					{
+						myOrder = myAccount.CreateOrder(Instrument, OrderAction.Sell, orderType, OrderEntry.Manual, TimeInForce.Day, myQuantity, priceClicked, priceClicked, "", "Entry", DateTime.MaxValue, null);
+					}
+					else if (priceClicked > Close[0])
+					{
+						myOrder = myAccount.CreateOrder(Instrument, OrderAction.Sell, OrderType.Limit, OrderEntry.Manual, TimeInForce.Day, myQuantity, priceClicked, 0, "", "Entry", DateTime.MaxValue, null);
+					}
+				}
+				
+				if (atmSelector.SelectedAtmStrategy != null)
+				{
+					NinjaTrader.NinjaScript.AtmStrategy.StartAtmStrategy(atmSelector.SelectedAtmStrategy, myOrder);
+				}
+				
+				myAccount.Submit(new[] { myOrder});
+				
+			}, null);
+
+			
+			
+		}
+		
 		protected void LeftMouseDown(object sender, MouseButtonEventArgs e)
 		{
-			if((buyButton == true || sellButton == true) && tradingFromChart == true)
+			if (tradingFromChart == true && (buyButton == true && buyMouse == MouseButton.Left))
 			{
-				TriggerCustomEvent(o =>
-				{
-					int Y = ChartingExtensions.ConvertToVerticalPixels(e.GetPosition(ChartControl as IInputElement).Y, ChartControl.PresentationSource);
-					
-					double priceClicked = MyChartScale.GetValueByY(Y);
-				
-					// get account, quantity, and ATM of chart trader
-					NinjaTrader.Gui.Tools.QuantityUpDown quantitySelector = (Window.GetWindow(ChartControl.Parent).FindFirst("ChartTraderControlQuantitySelector") as NinjaTrader.Gui.Tools.QuantityUpDown);
-					myQuantity = quantitySelector.Value;
-					
-					NinjaTrader.Gui.Tools.AccountSelector accountSelector = (Window.GetWindow(ChartControl.Parent).FindFirst("ChartTraderControlAccountSelector") as NinjaTrader.Gui.Tools.AccountSelector);
-					myAccount = accountSelector.SelectedAccount;
-					
-					NinjaTrader.Gui.NinjaScript.AtmStrategy.AtmStrategySelector atmSelector = (Window.GetWindow(ChartControl.Parent).FindFirst("ChartTraderControlATMStrategySelector") as NinjaTrader.Gui.NinjaScript.AtmStrategy.AtmStrategySelector);
-					
-					
-					
-					if (buyButton == true)
-					{
-						if (priceClicked > Close[0])
-						{	
-							myOrder = myAccount.CreateOrder(Instrument, OrderAction.Buy, orderType, OrderEntry.Manual, TimeInForce.Day, myQuantity, priceClicked, priceClicked, "", "Entry", DateTime.MaxValue, null);
-						}
-						else if (priceClicked < Close[0])
-						{
-							myOrder = myAccount.CreateOrder(Instrument, OrderAction.Buy, OrderType.Limit, OrderEntry.Manual, TimeInForce.Day, myQuantity, priceClicked, 0, "", "Entry", DateTime.MaxValue, null);
-						}
-					}
-					
-					if (sellButton == true)
-					{
-						if (priceClicked < Close[0])
-						{
-							myOrder = myAccount.CreateOrder(Instrument, OrderAction.Sell, orderType, OrderEntry.Manual, TimeInForce.Day, myQuantity, priceClicked, priceClicked, "", "Entry", DateTime.MaxValue, null);
-						}
-						else if (priceClicked > Close[0])
-						{
-							myOrder = myAccount.CreateOrder(Instrument, OrderAction.Sell, OrderType.Limit, OrderEntry.Manual, TimeInForce.Day, myQuantity, priceClicked, 0, "", "Entry", DateTime.MaxValue, null);
-						}
-					}
-					
-					if (atmSelector.SelectedAtmStrategy != null)
-					{
-						NinjaTrader.NinjaScript.AtmStrategy.StartAtmStrategy(atmSelector.SelectedAtmStrategy, myOrder);
-					}
-					
-					myAccount.Submit(new[] { myOrder});
-					
-				}, null);
-
-				
-				e.Handled = true;
+				PlaceOrder(1,e);
 			}
+			if (tradingFromChart == true && (sellButton == true && sellMouse == MouseButton.Left))
+			{
+				PlaceOrder(2,e);
+			}
+
+			e.Handled = true;
+		}
+		
+		protected void RightMouseDown(object sender, MouseButtonEventArgs e)
+		{
+			Print(sellButton);
+			Print(sellMouse.ToString());
+			if (tradingFromChart == true && (sellButton == true && sellMouse == MouseButton.Right))
+				PlaceOrder(2,e);
+
+			e.Handled = true;
 		}
 		
 		
@@ -522,18 +549,32 @@ namespace NinjaTrader.NinjaScript.Indicators
 		#endregion
 		
 		#region Properties
-		[Display(Name="Buy hotkey", Order=1,GroupName = "Hotkeys", Description="Choose a key binding for buys")]
+		[Display(Name="Buy hotkey", Order=1,GroupName = "Hotkey combinations", Description="Choose a key binding for buys")]
 		public DesiredKey BuyKey
 		{
 			get { return buyKey; }
 			set { buyKey = value; }
 		}
 		
-		[Display(Name="Sell hotkey", Order=2,GroupName = "Hotkeys", Description="Choose a key binding for sells")]
+		[Display(Name="Buy mouse button", Order=2,GroupName = "Hotkey combinations", Description="Choose a mouse button for buys")]
+		public MouseButton BuyMouse
+		{
+			get { return buyMouse; }
+			set { buyMouse = value; }
+		}
+		
+		[Display(Name="Sell hotkey", Order=3,GroupName = "Hotkey combinations", Description="Choose a key binding for sells")]
 		public DesiredKey SellKey
 		{
 			get { return sellKey; }
 			set { sellKey = value; }
+		}
+		
+		[Display(Name="Sell mouse button", Order=4,GroupName = "Hotkey combinations", Description="Choose a mouse button for sells")]
+		public MouseButton SellMouse
+		{
+			get { return sellMouse; }
+			set { sellMouse = value; }
 		}
 		
 		[Display(Name="Stop order type", Order=1,GroupName = "Order management", Description="Choose the type of stop order")]
@@ -545,6 +586,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 		
 		#endregion
 	}
+}
+
+public enum MouseButton
+{
+	Left,
+	Right
 }
 
 public enum DesiredKey
