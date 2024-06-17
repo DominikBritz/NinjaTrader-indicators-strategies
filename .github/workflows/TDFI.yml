@@ -1,12 +1,12 @@
 # ZIPs all indicator files
 
-name: ZIP IFTOnRSI
+name: ZIP TDFI
 
 on:
   push:
     paths:
-      - 'Indicators/IFTOnRSI/Indicators/**'
-      - 'Indicators/IFTOnRSI/Info.xml'
+      - 'Indicators/TDFI/Indicators/**'
+      - 'Indicators/TDFI/Info.xml'
 
   # Allow running this workflow manually from the Actions tab
   workflow_dispatch:
@@ -20,12 +20,12 @@ jobs:
           token: ${{ secrets.PAT }}
       - uses: JesseTG/rm@v1.0.3
         with:
-          path: "Indicators/IFTOnRSI/IFTOnRSI.zip"
+          path: "Indicators/TDFI/TDFI.zip"
       - name: install zip
         uses: montudor/action-zip@v1
       - name: zip output
-        run: zip -q -r -l IFTOnRSI.zip Indicators Info.xml
-        working-directory: Indicators/IFTOnRSI
+        run: zip -q -r -l TDFI.zip Indicators Info.xml
+        working-directory: Indicators/TDFI
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Update zip file
