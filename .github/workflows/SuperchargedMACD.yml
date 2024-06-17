@@ -1,0 +1,31 @@
+# ZIPs all indicator files
+
+name: ZIP SuperchargedMACD
+
+on:
+  push:
+    paths:
+      - 'Indicators/SuperchargedMACD/Indicators/**'
+      - 'Indicators/SuperchargedMACD/Info.xml'
+
+  # Allow running this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  zip-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+      - uses: JesseTG/rm@v1.0.3
+        with:
+          path: "Indicators/SuperchargedMACD/SuperchargedMACD.zip"
+      - name: install zip
+        uses: montudor/action-zip@v1
+      - name: zip output
+        run: zip -q -r -l SuperchargedMACD.zip Indicators Info.xml
+        working-directory: Indicators/SuperchargedMACD
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update zip file
